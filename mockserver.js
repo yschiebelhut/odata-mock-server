@@ -30,10 +30,17 @@ require('node-ui5/factory')({
 		console.log(ms.getEntitySetData("Meetups"));
 		console.log("MockServer Object:");
 		console.log(ms);
+		console.log("Requests of ms:");
+		console.log(ms.getRequests());
 
 		const express = require('express');
 		const app = express();
-		console.log("created express-app");
+		const bodyParser = require('body-parser');
+		
+		app.use(bodyParser.text({
+			type: '*/*'
+		}));
+		console.log("created express-app with body-parser");
 
 		// forward HTTP-requests to MockServer
 		app.all('/*', function (req, res) {
@@ -58,19 +65,6 @@ require('node-ui5/factory')({
 				}
 			})
 		})
-
-		// Object.keys(MockServer.HTTPMETHOD).forEach(function (sMethodName) {
-			// var sMethod = MockServer.HTTPMETHOD[sMethodName]
-			// ms.attachBefore(sMethod, function (oEvent) {
-				// var oXhr = oEvent.getParameters().oXhr
-				// console.log('MockServer::before', sMethod, oXhr.url, oXhr)
-			// })
-			// ms.attachAfter(sMethod, function (oEvent) {
-				// var oXhr = oEvent.getParameters().oXhr
-				// console.log('MockServer::after', sMethod, oXhr.url, oXhr)
-			// })
-		// })
-
 
 		app.listen(8080, () => {
 			console.log("express-app running");
