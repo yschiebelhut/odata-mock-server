@@ -1,0 +1,29 @@
+{
+  "name": "odata-mock-server",
+  "version": "1.0.0",
+  "description": "standalone odata mock server based on sapui5 MockServer",
+  "main": "mockserver.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-ui5": "^2.0.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yschiebelhut/odata-mock-server.git"
+  },
+  "keywords": [
+    "odata",
+    "server",
+    "mock"
+  ],
+  "author": "Yannik Schiebelhut",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yschiebelhut/odata-mock-server/issues"
+  },
+  "homepage": "https://github.com/yschiebelhut/odata-mock-server#readme"
+}
