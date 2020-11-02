@@ -9,22 +9,27 @@ require('node-ui5/factory')({
 	], function(MockServer) {
 		console.log("import of node-ui5 successful!");
 
+		// creation of the MockServer
 		var ms = new MockServer({
 			rootUri: "/"
 		});
-
+		
 		console.log("\nrootUri set to " + ms.getRootUri());
 
+		// set the data to be used by the MockServer
 		ms.simulate(sap.ui.require.toUrl('myApp/metadata.xml'), {
 			sMockdataBaseUrl: sap.ui.require.toUrl('myApp/mockdata'),
 			bGenerateMissingMockData: true
 		});
 
+		// set the MockServer to automatically respond with a little delay
 		MockServer.config({
 			autoRespond: true,
 			autoRespondAfter: 10
 		});
 
+		// start the MockServer
+		// (also log some debug information)
 		ms.start();
 		console.log("EntitySetData of Meetups");
 		console.log(ms.getEntitySetData("Meetups"));
@@ -33,19 +38,22 @@ require('node-ui5/factory')({
 		console.log("Requests of ms:");
 		console.log(ms.getRequests());
 
+		// import required frameworks for webservice
 		const express = require('express');
 		const app = express();
 		const bodyParser = require('body-parser');
 		const basicAuth = require('express-basic-auth');
-		
+
+		// parser needed for PUT and POST requests
 		app.use(bodyParser.text({
 			type: '*/*'
 		}));
+		// handle authentication
 		app.use(basicAuth({
 			users: { 'root': '123' }
 		}));
 		console.log("created express-app with body-parser and authentication");
-
+		
 		// forward HTTP-requests to MockServer
 		app.all('/*', function (req, res) {
 			console.log(req.method);
@@ -70,9 +78,10 @@ require('node-ui5/factory')({
 			})
 		})
 
+		// start webservice on PORT 8080
 		app.listen(8080, () => {
 			console.log("express-app running");
 		});
-
+		
 	});
 })
