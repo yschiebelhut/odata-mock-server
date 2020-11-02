@@ -36,11 +36,15 @@ require('node-ui5/factory')({
 		const express = require('express');
 		const app = express();
 		const bodyParser = require('body-parser');
+		const basicAuth = require('express-basic-auth');
 		
 		app.use(bodyParser.text({
 			type: '*/*'
 		}));
-		console.log("created express-app with body-parser");
+		app.use(basicAuth({
+			users: { 'root': '123' }
+		}));
+		console.log("created express-app with body-parser and authentication");
 
 		// forward HTTP-requests to MockServer
 		app.all('/*', function (req, res) {
