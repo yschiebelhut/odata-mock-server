@@ -4,6 +4,11 @@ require('node-ui5/factory')({
 		myApp: __dirname
 	}
 }).then( () => {
+	process.on('unhandledRejection', error => {
+		console.log('unhandledRejection'.red, error.message.gray)
+		// console.log(error)
+		// console.log(error.stack)
+	});
 	sap.ui.require([
 		"sap/ui/core/util/MockServer"
 	], function(MockServer) {
@@ -11,7 +16,7 @@ require('node-ui5/factory')({
 
 		// creation of the MockServer
 		var ms = new MockServer({
-			rootUri: "/"
+			rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 		});
 		
 		console.log("\nrootUri set to " + ms.getRootUri());
@@ -55,7 +60,7 @@ require('node-ui5/factory')({
 		console.log("created express-app with body-parser and authentication");
 		
 		// forward HTTP-requests to MockServer
-		app.all('/*', function (req, res) {
+		app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
 			console.log(req.method);
 			console.log(req.url);
 			window.jQuery.ajax({
