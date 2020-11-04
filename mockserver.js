@@ -10,9 +10,79 @@ require('node-ui5/factory')({
 		//console.log(error.stack)
 	});
 	sap.ui.require([
-		"sap/ui/core/util/MockServer"
-	], function(MockServer) {
+		"sap/ui/core/util/MockServer",
+		"jquery.sap.global"
+	], function(MockServer, jQuery) {
 		console.log("import of node-ui5 successful!");
+
+
+		// Begin of function imports
+		var GetRobotWarehouseOrders = function (oXhr, sUrlParams) {
+			console.log("invoking GetRobotWarehouseOrders")
+			// Expected parameters: Lgnum, Rsrc
+			console.log("sUrlParams: " + sUrlParams)
+			// Expected parameters: Lgnum, Rsrc, Who
+			var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
+				var p = curr.split("=")
+				prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+				return prev
+			}, {})  
+			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+			var uri = ""
+			var abort = false
+
+			// 1. Check if the robot resource exists in EWM
+			// yes: continue
+			// no: return business_error: ROBOT_NOT_FOUND
+			uri = "/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+			console.log("checking if robot resource exists at: " + uri)
+			jQuery.ajax({
+				url: uri,
+				dataType : 'json',
+				async: false,
+				success : function(res) {
+					console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+				}, error : function(err) {
+					console.log(JSON.stringify(err))
+					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })	
+					abort = true
+				}
+			})
+			if(abort)
+				return true
+
+			// 2. Check if a warehouse order is assigned to the robot
+			// yes: return warehouse order of type WarehouseOrder
+			// no: return business_error: NO_ORDER_FOUND
+			uri = "/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
+			console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)	
+			jQuery.ajax({
+				url: uri,
+				dataType : 'json',
+				async: false,
+				success : function(res) {
+					if(res.d.results.length > 0) {
+						console.log("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
+						oXhr.respondJSON(200, {}, res)
+						abort = true
+					} else {
+						oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					}
+				}, error : function(err) {
+					console.log(JSON.stringify(err))
+					oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					abort = true
+				}
+			})
+
+			return true
+		};
+
+		// End of function imports
+
+
+
 
 		// creation of the MockServer
 		var ms = new MockServer({
@@ -21,27 +91,55 @@ require('node-ui5/factory')({
 		
 		console.log("rootUri set to " + ms.getRootUri());
 
-		// set the data to be used by the MockServer
-		ms.simulate(sap.ui.require.toUrl('myApp/metadata.xml'), {
-			sMockdataBaseUrl: sap.ui.require.toUrl('myApp/mockdata'),
-			bGenerateMissingMockData: true
-		});
-
 		// set the MockServer to automatically respond with a little delay
 		MockServer.config({
 			autoRespond: true,
 			autoRespondAfter: 10
 		});
 
+		// set the data to be used by the MockServer
+		ms.simulate(sap.ui.require.toUrl('myApp/metadata.xml'), {
+			sMockdataBaseUrl: sap.ui.require.toUrl('myApp/mockdata'),
+			bGenerateMissingMockData: true
+		});
+
+		var aRequests = ms.getRequests();
+		console.log(aRequests);
+		var reg = new RegExp('.*')
+		console.log(aRequests[105].path);
+		aRequests.push({
+			method: "GET",
+			// path: reg,
+			path: new RegExp('GetRobotWarehouseOrders\\?(.*)').toString(),
+			// path: 'Bald',
+			response: function (oXhr) {
+				oXhr.respond(200, {
+					'Content-Type': 'application/json;charset=utf-8'
+				}, JSON.stringify({
+					d: {}
+				}))
+				return true
+			}
+		});
+		console.log(aRequests[106].path);
+		console.log(aRequests);
+		console.log("----------------------------");
+		ms.setRequests(aRequests);
+		console.log(ms.getRequests());
+
+
 		// start the MockServer
 		// (also log some debug information)
-		ms.start();
+		setTimeout( () => {
+			ms.start()
+		}, 5000);
 		//console.log("EntitySetData of Meetups");
 		//console.log(ms.getEntitySetData("Meetups"));
 		//console.log("MockServer Object:");
 		//console.log(ms);
 		//console.log("Requests of ms:");
-		//console.log(ms.getRequests());
+		console.log("ms running");
+		console.log(ms.getRequests());
 
 		// import required frameworks for webservice
 		const express = require('express');
