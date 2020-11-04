@@ -9,7 +9,8 @@
 		"node-ui5": "^2.0.4"
 	},
 	"devDependencies": {
-		"mocha": "^8.2.1"
+		"mocha": "^8.2.1",
+		"winston": "^3.3.3"
 	},
 	"scripts": {
 		"start": "node mockserver.js",
