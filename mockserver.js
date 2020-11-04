@@ -6,8 +6,8 @@ require('node-ui5/factory')({
 }).then( () => {
 	process.on('unhandledRejection', error => {
 		console.log('unhandledRejection'.red, error.message.gray)
-		// console.log(error)
-		// console.log(error.stack)
+		//console.log(error)
+		//console.log(error.stack)
 	});
 	sap.ui.require([
 		"sap/ui/core/util/MockServer"
@@ -19,7 +19,7 @@ require('node-ui5/factory')({
 			rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 		});
 		
-		console.log("\nrootUri set to " + ms.getRootUri());
+		console.log("rootUri set to " + ms.getRootUri());
 
 		// set the data to be used by the MockServer
 		ms.simulate(sap.ui.require.toUrl('myApp/metadata.xml'), {
@@ -36,12 +36,12 @@ require('node-ui5/factory')({
 		// start the MockServer
 		// (also log some debug information)
 		ms.start();
-		console.log("EntitySetData of Meetups");
-		console.log(ms.getEntitySetData("Meetups"));
-		console.log("MockServer Object:");
-		console.log(ms);
-		console.log("Requests of ms:");
-		console.log(ms.getRequests());
+		//console.log("EntitySetData of Meetups");
+		//console.log(ms.getEntitySetData("Meetups"));
+		//console.log("MockServer Object:");
+		//console.log(ms);
+		//console.log("Requests of ms:");
+		//console.log(ms.getRequests());
 
 		// import required frameworks for webservice
 		const express = require('express');
@@ -61,8 +61,7 @@ require('node-ui5/factory')({
 		
 		// forward HTTP-requests to MockServer
 		app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
-			console.log(req.method);
-			console.log(req.url);
+			console.log(req.method + "\t" + req.url);
 			window.jQuery.ajax({
 				method: req.method,
 				url: req.url,
