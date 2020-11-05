@@ -1,14 +1,18 @@
+"use strict";
+
+// import module from Ardnaud
 require('node-ui5/factory')({
 	exposeAsGlobals: true,
 	resourceroots: {
 		myApp: __dirname
 	}
 }).then( () => {
+	// pretty nasty way to keep new versoins of node from crashing
 	process.on('unhandledRejection', error => {
-		console.log('unhandledRejection'.red, error.message.gray)
-		//console.log(error)
-		//console.log(error.stack)
+		console.log('unhandledRejection'.red, error.message.gray);
 	});
+
+	
 	sap.ui.require([
 		"sap/ui/core/util/MockServer"
 	], function(MockServer) {
@@ -34,16 +38,10 @@ require('node-ui5/factory')({
 		});
 
 		// start the MockServer
-		// (also log some debug information)
 		ms.start();
-		//console.log("EntitySetData of Meetups");
-		//console.log(ms.getEntitySetData("Meetups"));
-		//console.log("MockServer Object:");
-		//console.log(ms);
-		//console.log("Requests of ms:");
-		//console.log(ms.getRequests());
 
-		// import required frameworks for webservice
+
+		// import required frameworks for odata webservice
 		const express = require('express');
 		const app = express();
 		const bodyParser = require('body-parser');
@@ -57,8 +55,10 @@ require('node-ui5/factory')({
 		app.use(basicAuth({
 			users: { 'root': '123' }
 		}));
+
 		console.log("created express-app with body-parser and authentication");
 		
+
 		// forward HTTP-requests to MockServer
 		app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
 			console.log(req.method + "\t" + req.url);
@@ -82,6 +82,7 @@ require('node-ui5/factory')({
 			})
 		})
 
+		
 		// start webservice on PORT 8080
 		app.listen(8080, () => {
 			console.log("express-app running");
