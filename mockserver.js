@@ -1,3 +1,5 @@
+"use strict";
+
 require('node-ui5/factory')({
 	exposeAsGlobals: true,
 	resourceroots: {
@@ -105,13 +107,14 @@ require('node-ui5/factory')({
 
 		var aRequests = ms.getRequests();
 		console.log(aRequests);
-		var reg = new RegExp('.*')
 		console.log(aRequests[105].path);
+		let reg = /GetRobotWarehouseOrders\\?(.*)/;
 		aRequests.push({
 			method: "GET",
-			// path: reg,
-			path: new RegExp('GetRobotWarehouseOrders\\?(.*)').toString(),
-			// path: 'Bald',
+			// path: new RegExp('GetRobotWarehouseOrders\\?(.*)').toString(),
+			path: new RegExp("GetRobotWarehouseOrders\\?(.*)"),
+			// path: aRequests[105].path,
+			// path: 'GetRobotWarehouseOrders',
 			response: function (oXhr) {
 				oXhr.respond(200, {
 					'Content-Type': 'application/json;charset=utf-8'
