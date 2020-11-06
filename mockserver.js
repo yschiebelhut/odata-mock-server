@@ -112,7 +112,8 @@ require('node-ui5/factory')({
 		aRequests.push({
 			method: "GET",
 			// path: new RegExp('(GetRobotWarehouseOrders)\\?(.*)').toString(),
-			path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
+			// path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
+			path: String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')),
 			// path: aRequests[105].path,
 			// path: 'GetRobotWarehouseOrders', // String will not be an option -> parameters...
 			// String with RegEx as content doesn't work either
@@ -125,15 +126,20 @@ require('node-ui5/factory')({
 				return true
 			}
 		});
+		aRequests[105].path = 'aölksdjfajf'
 		const util = require('util');
-		const assert = require('assert')
 		console.log("path " + aRequests[106].path);
 		console.log("type of path " + typeof(aRequests[106].path));
 		console.log(util.inspect(aRequests[106].path, false, null, true));
 		console.log("raw regex " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)'))
 		console.log("type of raw regex " + typeof(new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
-		console.log("path and regex equal " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)') === aRequests[106].path)
-		console.log("path and regex equal " + assert.deepStrictEqual(aRequests[106].path, new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
+		console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) == String(aRequests[105].path)))
+		console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) === String(aRequests[105].path)))
+		console.log(String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')))
+		console.log(String(aRequests[105].path))
+		console.log("path and regex equal " + ((new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')).toString() === (aRequests[105].path).toString()))
+		console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')) === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
+		console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString() === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString())
 		console.log(util.inspect(new RegExp('(GetRobotWarehouseOrders)\\?(.*)'), false, null, true));
 		console.log(aRequests);
 		console.log("----------------------------");
