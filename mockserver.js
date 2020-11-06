@@ -111,10 +111,11 @@ require('node-ui5/factory')({
 		let reg = /GetRobotWarehouseOrders\\?(.*)/;
 		aRequests.push({
 			method: "GET",
-			// path: new RegExp('GetRobotWarehouseOrders\\?(.*)').toString(),
-			path: new RegExp("GetRobotWarehouseOrders\\?(.*)"),
+			// path: new RegExp('(GetRobotWarehouseOrders)\\?(.*)').toString(),
+			path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
 			// path: aRequests[105].path,
-			// path: 'GetRobotWarehouseOrders',
+			// path: 'GetRobotWarehouseOrders', // String will not be an option -> parameters...
+			// String with RegEx as content doesn't work either
 			response: function (oXhr) {
 				oXhr.respond(200, {
 					'Content-Type': 'application/json;charset=utf-8'
@@ -124,7 +125,16 @@ require('node-ui5/factory')({
 				return true
 			}
 		});
-		console.log(aRequests[106].path);
+		const util = require('util');
+		const assert = require('assert')
+		console.log("path " + aRequests[106].path);
+		console.log("type of path " + typeof(aRequests[106].path));
+		console.log(util.inspect(aRequests[106].path, false, null, true));
+		console.log("raw regex " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)'))
+		console.log("type of raw regex " + typeof(new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
+		console.log("path and regex equal " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)') === aRequests[106].path)
+		console.log("path and regex equal " + assert.deepStrictEqual(aRequests[106].path, new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
+		console.log(util.inspect(new RegExp('(GetRobotWarehouseOrders)\\?(.*)'), false, null, true));
 		console.log(aRequests);
 		console.log("----------------------------");
 		ms.setRequests(aRequests);
