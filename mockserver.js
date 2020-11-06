@@ -113,20 +113,35 @@ require('node-ui5/factory')({
 			method: "GET",
 			// path: new RegExp('(GetRobotWarehouseOrders)\\?(.*)').toString(),
 			// path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
-			path: String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')),
+			path: new RegExp("\\$metodata([?#].*)?"),
+			// path: String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')),
 			// path: aRequests[105].path,
 			// path: 'GetRobotWarehouseOrders', // String will not be an option -> parameters...
 			// String with RegEx as content doesn't work either
-			response: function (oXhr) {
-				oXhr.respond(200, {
-					'Content-Type': 'application/json;charset=utf-8'
-				}, JSON.stringify({
-					d: {}
-				}))
-				return true
+			
+			// response: function (oXhr) {
+			// 	oXhr.respond(200, {
+			// 		'Content-Type': 'application/json;charset=utf-8'
+			// 	}, JSON.stringify({
+			// 		d: {}
+			// 	}))
+			// 	return true
+			// }
+
+			response: function(oXhr) {
+				sap.ui.requireSync("jquery.sap.xml");
+				Log.debug("MockServer: incoming request for url: " + oXhr.url);
+				var mHeaders = {
+					"Content-Type": "application/xml;charset=utf-8"
+				};
+				fnHandleXsrfTokenHeader(oXhr, mHeaders);
+
+				oXhr.respond(200, mHeaders, that._sMetadata);
+				Log.debug("MockServer: response sent with: 200, " + that._sMetadata);
+				return true;
 			}
 		});
-		aRequests[105].path = 'aölksdjfajf'
+		aRequests[105].path = 'alksdjfajf'
 		const util = require('util');
 		console.log("path " + aRequests[106].path);
 		console.log("type of path " + typeof(aRequests[106].path));
