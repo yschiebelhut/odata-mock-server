@@ -7,9 +7,9 @@ require('node-ui5/factory')({
     }
 }).then(() => {
     process.on('unhandledRejection', error => {
-        //  console.log('unhandledRejection'.red, error.message.gray)
-        //console.log(error)
-        //console.log(error.stack)
+        console.log('unhandledRejection'.red, error.message.gray)
+            //console.log(error)
+            //console.log(error.stack)
     });
     sap.ui.require([
         "jquery.sap.global",
@@ -630,19 +630,9 @@ require('node-ui5/factory')({
         });
 
         var aRequests = ms.getRequests();
-        console.log(aRequests);
-        console.log(aRequests[105].path);
-
         aRequests.push({
             method: "GET",
-            // path: new RegExp('(GetRobotWarehouseOrders)\\?(.*)').toString(),
-            // path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
             path: "GetRobotWarehouseOrders\\?(.*)",
-            // path: String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')),
-            // path: aRequests[105].path,
-            // path: 'GetRobotWarehouseOrders', // String will not be an option -> parameters...
-            // String with RegEx as content doesn't work either
-
             response: GetRobotWarehouseOrders
         })
         aRequests.push({
@@ -665,41 +655,13 @@ require('node-ui5/factory')({
             path: "SendFirstConfirmationError\\?(.*)",
             response: SendFirstConfirmationError
         })
-
-
-        aRequests[105].path = 'alksdjfajf'
-        const util = require('util');
-        console.log("path " + aRequests[106].path);
-        console.log("type of path " + typeof(aRequests[106].path));
-        console.log(util.inspect(aRequests[106].path, false, null, true));
-        console.log("raw regex " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)'))
-        console.log("type of raw regex " + typeof(new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
-        console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) == String(aRequests[105].path)))
-        console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) === String(aRequests[105].path)))
-        console.log(String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')))
-        console.log(String(aRequests[105].path))
-        console.log("path and regex equal " + ((new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')).toString() === (aRequests[105].path).toString()))
-        console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')) === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
-        console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString() === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString())
-        console.log(util.inspect(new RegExp('(GetRobotWarehouseOrders)\\?(.*)'), false, null, true));
-        console.log(aRequests);
-        console.log("----------------------------");
         ms.setRequests(aRequests);
-        console.log(ms.getRequests());
 
 
         // start the MockServer
         // (also log some debug information)
-        setTimeout(() => {
-            ms.start()
-        }, 1000);
-        //console.log("EntitySetData of Meetups");
-        //console.log(ms.getEntitySetData("Meetups"));
-        //console.log("MockServer Object:");
-        //console.log(ms);
-        //console.log("Requests of ms:");
+        ms.start()
         console.log("ms running");
-        console.log(ms.getRequests());
 
         // import required frameworks for webservice
         const express = require('express');
