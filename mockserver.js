@@ -5,7 +5,7 @@ require('node-ui5/factory')({
 	resourceroots: {
 		myApp: __dirname
 	}
-}).then( () => {
+}).then(() => {
 	process.on('unhandledRejection', error => {
 		console.log('unhandledRejection'.red, error.message.gray)
 		//console.log(error)
@@ -14,7 +14,7 @@ require('node-ui5/factory')({
 	sap.ui.require([
 		"sap/ui/core/util/MockServer",
 		"jquery.sap.global"
-	], function(MockServer, jQuery) {
+	], function (MockServer, jQuery) {
 		console.log("import of node-ui5 successful!");
 
 
@@ -24,11 +24,11 @@ require('node-ui5/factory')({
 			// Expected parameters: Lgnum, Rsrc
 			console.log("sUrlParams: " + sUrlParams)
 			// Expected parameters: Lgnum, Rsrc, Who
-			var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
+			var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 				var p = curr.split("=")
 				prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 				return prev
-			}, {})  
+			}, {})
 			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
 			var uri = ""
 			var abort = false
@@ -36,42 +36,43 @@ require('node-ui5/factory')({
 			// 1. Check if the robot resource exists in EWM
 			// yes: continue
 			// no: return business_error: ROBOT_NOT_FOUND
-			uri = "/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+			// uri = "/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+			uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
 			console.log("checking if robot resource exists at: " + uri)
 			jQuery.ajax({
 				url: uri,
-				dataType : 'json',
+				dataType: 'json',
 				async: false,
-				success : function(res) {
+				success: function (res) {
 					console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
-				}, error : function(err) {
+				}, error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })	
+					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 					abort = true
 				}
 			})
-			if(abort)
+			if (abort)
 				return true
 
 			// 2. Check if a warehouse order is assigned to the robot
 			// yes: return warehouse order of type WarehouseOrder
 			// no: return business_error: NO_ORDER_FOUND
-			uri = "/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
-			console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)	
+			uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
+			console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
 			jQuery.ajax({
 				url: uri,
-				dataType : 'json',
+				dataType: 'json',
 				async: false,
-				success : function(res) {
-					if(res.d.results.length > 0) {
+				success: function (res) {
+					if (res.d.results.length > 0) {
 						console.log("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
 						oXhr.respondJSON(200, {}, res)
 						abort = true
 					} else {
 						oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					}
-				}, error : function(err) {
+				}, error: function (err) {
 					console.log(JSON.stringify(err))
 					oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					abort = true
@@ -90,7 +91,7 @@ require('node-ui5/factory')({
 		var ms = new MockServer({
 			rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 		});
-		
+
 		console.log("rootUri set to " + ms.getRootUri());
 
 		// set the MockServer to automatically respond with a little delay
@@ -106,74 +107,23 @@ require('node-ui5/factory')({
 		});
 
 		var aRequests = ms.getRequests();
-		console.log(aRequests);
-		console.log(aRequests[105].path);
-		let reg = /GetRobotWarehouseOrders\\?(.*)/;
 		aRequests.push({
 			method: "GET",
-			// path: new RegExp('(GetRobotWarehouseOrders)\\?(.*)').toString(),
-			// path: new RegExp("(GetRobotWarehouseOrders)\\?(.*)"),
-			path: new RegExp("\\$metodata([?#].*)?"),
-			// path: String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')),
-			// path: aRequests[105].path,
-			// path: 'GetRobotWarehouseOrders', // String will not be an option -> parameters...
-			// String with RegEx as content doesn't work either
-			
-			// response: function (oXhr) {
-			// 	oXhr.respond(200, {
-			// 		'Content-Type': 'application/json;charset=utf-8'
-			// 	}, JSON.stringify({
-			// 		d: {}
-			// 	}))
-			// 	return true
-			// }
-
-			response: function(oXhr) {
-				sap.ui.requireSync("jquery.sap.xml");
-				Log.debug("MockServer: incoming request for url: " + oXhr.url);
-				var mHeaders = {
-					"Content-Type": "application/xml;charset=utf-8"
-				};
-				fnHandleXsrfTokenHeader(oXhr, mHeaders);
-
-				oXhr.respond(200, mHeaders, that._sMetadata);
-				Log.debug("MockServer: response sent with: 200, " + that._sMetadata);
-				return true;
-			}
+			path: "GetRobotWarehouseOrders\\?(.*)",
+			response: GetRobotWarehouseOrders
 		});
-		aRequests[105].path = 'alksdjfajf'
-		const util = require('util');
-		console.log("path " + aRequests[106].path);
-		console.log("type of path " + typeof(aRequests[106].path));
-		console.log(util.inspect(aRequests[106].path, false, null, true));
-		console.log("raw regex " + new RegExp('(GetRobotWarehouseOrders)\\?(.*)'))
-		console.log("type of raw regex " + typeof(new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
-		console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) == String(aRequests[105].path)))
-		console.log("path and regex equal " + (String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')) === String(aRequests[105].path)))
-		console.log(String(new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')))
-		console.log(String(aRequests[105].path))
-		console.log("path and regex equal " + ((new RegExp('(ResourceGroupDescriptionSet)\\(([^/\\?#]+)\\)/?(.*)?')).toString() === (aRequests[105].path).toString()))
-		console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')) === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')))
-		console.log((new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString() === (new RegExp('(GetRobotWarehouseOrders)\\?(.*)')).toString())
-		console.log(util.inspect(new RegExp('(GetRobotWarehouseOrders)\\?(.*)'), false, null, true));
-		console.log(aRequests);
-		console.log("----------------------------");
 		ms.setRequests(aRequests);
-		console.log(ms.getRequests());
 
 
 		// start the MockServer
 		// (also log some debug information)
-		setTimeout( () => {
-			ms.start()
-		}, 5000);
+		ms.start()
 		//console.log("EntitySetData of Meetups");
 		//console.log(ms.getEntitySetData("Meetups"));
 		//console.log("MockServer Object:");
 		//console.log(ms);
 		//console.log("Requests of ms:");
 		console.log("ms running");
-		console.log(ms.getRequests());
 
 		// import required frameworks for webservice
 		const express = require('express');
@@ -190,7 +140,7 @@ require('node-ui5/factory')({
 			users: { 'root': '123' }
 		}));
 		console.log("created express-app with body-parser and authentication");
-		
+
 		// forward HTTP-requests to MockServer
 		app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
 			console.log(req.method + "\t" + req.url);
@@ -218,6 +168,6 @@ require('node-ui5/factory')({
 		app.listen(8080, () => {
 			console.log("express-app running");
 		});
-		
+
 	});
 })
