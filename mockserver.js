@@ -37,7 +37,7 @@ require('node-ui5/factory')({
             // 1. Check if the robot resource exists in EWM
             // yes: continue
             // no: return business_error: ROBOT_NOT_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
             console.log("checking if robot resource exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -59,7 +59,7 @@ require('node-ui5/factory')({
             // 2. Check if the who exists in EWM
             // yes: continue
             // no: return business_error: NO_ORDER_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
             console.log("checking if warehouseorder exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -85,7 +85,7 @@ require('node-ui5/factory')({
             who.Status = ""
             who.Queue = "ERROR"
             who.Rsrc = ""
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
             console.log("updating entity at " + uri)
             jQuery.ajax({
                 url: uri,
@@ -103,7 +103,7 @@ require('node-ui5/factory')({
                 }
             })
 
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
             console.log("checking if warehouseorder exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -139,7 +139,7 @@ require('node-ui5/factory')({
             // 1. Check if the robot resource exists in EWM
             // yes: continue
             // no: return business_error: ROBOT_NOT_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
             console.log("checking if robot resource exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -161,7 +161,7 @@ require('node-ui5/factory')({
             // 2. Check if a warehouse order is assigned to the robot
             // yes: return business_error: ROBOT_HAS_ORDER
             // no: continue
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
             console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -191,7 +191,7 @@ require('node-ui5/factory')({
             //    3.2 Assign robot resource to warehouse order "Rsrc"
             // no: return business_error: NO_ORDER_FOUND
             var who = ""
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet?$filter=Rsrc eq '' and Status eq ''"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '' and Status eq ''"
             console.log("checking for open warehouseorder that hasn't been assigned yet")
             jQuery.ajax({
                 url: uri,
@@ -222,7 +222,7 @@ require('node-ui5/factory')({
             // Assign who to robot and update status
             who.Status = "D"
             who.Rsrc = oUrlParams.Rsrc
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who.Who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who.Who + "')"
             console.log("updating entity at " + uri)
             jQuery.ajax({
                 url: uri,
@@ -257,7 +257,7 @@ require('node-ui5/factory')({
             // 1. Verify that warehousetask exists
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("checking if openwarehousetask exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -280,7 +280,7 @@ require('node-ui5/factory')({
             // 2. Verify that warehouseorder Status is not "C"
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
             console.log("checking if warehouseorder exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -309,7 +309,7 @@ require('node-ui5/factory')({
             // 3. Verify that warehousetask Tostat is not "C"
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -342,7 +342,7 @@ require('node-ui5/factory')({
             wht.Vltyp = ""
             wht.Vlber = ""
             wht.Vlpla = ""
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -379,7 +379,7 @@ require('node-ui5/factory')({
             // 1. Verify that warehousetask exists
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("checking if openwarehousetask exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -402,7 +402,7 @@ require('node-ui5/factory')({
             // 2. Verify that warehouseorder Status is not "C"
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
             console.log("checking if warehouseorder exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -432,7 +432,7 @@ require('node-ui5/factory')({
             // 3. Verify that warehousetask Tostat is not "C"
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -462,7 +462,7 @@ require('node-ui5/factory')({
             // yes: continue
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
             wht.Tostat = "C"
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
             console.log("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -484,7 +484,7 @@ require('node-ui5/factory')({
             // 5. Check tasks in warehouseorder, if all Tostat="C" -> set Status="C"
             // yes: 
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//OpenWarehouseTaskSet?$filter=Who eq '" + who + "'"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet?$filter=Who eq '" + who + "'"
             console.log("checking all tasks for who " + who + " regarding their 'Tostat'")
             jQuery.ajax({
                 url: uri,
@@ -519,7 +519,7 @@ require('node-ui5/factory')({
             // yes:  return whoObj
             // no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
             whoObj.Status = "C"
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
             console.log("setting Status to 'C' for warehouseorder " + who + " at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -557,7 +557,7 @@ require('node-ui5/factory')({
             // 1. Check if the robot resource exists in EWM
             // yes: continue
             // no: return business_error: ROBOT_NOT_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
             console.log("checking if robot resource exists at: " + uri)
             jQuery.ajax({
                 url: uri,
@@ -579,7 +579,7 @@ require('node-ui5/factory')({
             // 2. Check if a warehouse order is assigned to the robot
             // yes: return warehouse order of type WarehouseOrder
             // no: return business_error: NO_ORDER_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV//WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
             console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
             jQuery.ajax({
                 url: uri,
