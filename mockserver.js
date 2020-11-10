@@ -663,7 +663,7 @@ require('node-ui5/factory')({
 
 
 		var AssignRobotToWarehouseOrder = function (oXhr, sUrlParams) {
-			console.log("invoking SetRobotStatus")
+			console.log("invoking AssignRobotToWarehouseOrder")
 			console.log("sUrlParams: " + sUrlParams)
 			var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 				var p = curr.split("=")
@@ -710,7 +710,7 @@ require('node-ui5/factory')({
 					// 3. check if WHO is already assigned to a robot
 					// yes: return business_error: WAREHOUSE_ORDER_ASSIGNED
 					// no: continue
-					if (res.body.Rsrc && res.body.Rsrc !== "") {
+					if (res.d.Rsrc && res.d.Rsrc !== "") {
 						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_ASSIGNED" } })
 						abort = true
 					} else {

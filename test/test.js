@@ -742,7 +742,7 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
         it('successfully set status code of a robot', async () => {
             await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
             await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
-            await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "123457890" })
+            await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
             let exp = { "d": { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')/OpenWarehouseTasks" } } } }
             let res = await tools.getEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
 
@@ -756,7 +756,7 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
         it('verify that http status code is 200', async () => {
             await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
             await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
-            let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "123457890" })
+            let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
 
             await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
             await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
