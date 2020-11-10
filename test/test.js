@@ -600,3 +600,122 @@ describe('Custom Function \'SetRobotStatus\'', () => {
     })
 })
 
+
+
+describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
+    describe('Errorcases', () => {
+        // ROBOT_NOT_FOUND
+        // WHO_NOT_FOUND: NO_ORDER_FOUND
+        // WHO_LOCKED: WAREHOUSE_ORDER_LOCKED
+        // WHO_ASSIGNED: WAREHOUSE_ORDER_ASSIGNED
+        // WHT_ASSIGNED: WAREHOUSE_TASK_ASSIGNED
+        describe('ROBOT_NOT_FOUND', () => {
+            it('check for correct business_error', async () => {
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                assert.deepStrictEqual(res.body.error.code, "ROBOT_NOT_FOUND")
+            })
+
+            it('verify that http status code is 404', async () => {
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                assert.deepStrictEqual(res.statusCode, 404)
+            })
+        })
+
+        describe('NO_ORDER_FOUND', () => {
+            it('check for correct business_error', async () => {
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
+            })
+
+            it('verify that http status code is 404', async () => {
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+                
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.statusCode, 404)
+            })
+        })
+        
+        describe('WAREHOUSE_ORDER_LOCKED', () => {
+            it('check for correct business_error', async () => {
+                assert.deepStrictEqual(true, false)
+            })
+            
+            it('verify that http status code is 404', async () => {
+                // assert.deepStrictEqual(res.statusCode, 404)
+                assert.deepStrictEqual(true, false)
+            })
+        })
+        
+        describe('WAREHOUSE_ORDER_ASSIGNED', () => {
+            it('check for correct business_error', async () => {
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot" })
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+                
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_ORDER_ASSIGNED")
+            })
+            
+            it('verify that http status code is 404', async () => {
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot" })
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+                
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.statusCode, 404)
+            })
+        })
+
+        describe('WAREHOUSE_TASK_ASSIGNED', () => {
+            it('check for correct business_error', async () => {
+                assert.deepStrictEqual(true, false)
+            })
+
+            it('verify that http status code is 404', async () => {
+                // assert.deepStrictEqual(res.statusCode, 404)
+                assert.deepStrictEqual(true, false)
+            })
+        })
+    })
+
+    describe('Success', () => {
+        it('successfully set status code of a robot', async () => {
+            await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
+            await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "123457890" })
+            let exp = { "d": { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1234567890')/OpenWarehouseTasks" } } } }
+            let res = await tools.getEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
+
+            await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+            assert.deepStrictEqual(res.body, exp)
+        })
+        
+        // is 200 the right status code here?
+        // cant find it in ABAP code
+        it('verify that http status code is 200', async () => {
+            await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
+            let res = await tools.oDataPostFunction("AssignRobotToWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "123457890" })
+    
+            await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+            assert.deepStrictEqual(res.statusCode, 200)
+        })
+    })
+})
+
