@@ -566,13 +566,12 @@ describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "NO_ROBOT_RESOURCE_TYPE")
             })
 
+
             it('verify that http status code is 400', async() => {
                 let res = await tools.oDataGetFunction("GetInProcessWarehouseOrders", { "Lgnum": "1400", "RsrcType": "wrongType" })
-                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
     })
-
     describe('Success', () => {
         it('checks for correct response', async() => {
 
@@ -590,6 +589,59 @@ describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
         })
 
     })
+})
 
 
+describe('Custom Function \'SetRobotStatus\'', () => {
+    describe('Errorcases', () => {
+        describe('ROBOT_NOT_FOUND', () => {
+            it('check for correct business_error', async() => {
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "someExccode" })
+                assert.deepStrictEqual(res.body.error.code, "ROBOT_NOT_FOUND")
+            })
+
+            it('verify that http status code is 404', async() => {
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "CODE" })
+                assert.deepStrictEqual(res.statusCode, 404)
+            })
+        })
+
+        describe('ROBOT_STATUS_NOT_SET', () => {
+            it('check for correct business_error', async() => {
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "tooLongCode" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.body.error.code, "ROBOT_STATUS_NOT_SET")
+            })
+
+            it('verify that http status code is 404', async() => {
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "tooLongCode" })
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                assert.deepStrictEqual(res.statusCode, 404)
+            })
+        })
+    })
+
+    describe('Success', () => {
+        it('successfully set status code of a robot', async() => {
+            await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "STAT" })
+            let exp = { "d": { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "STAT", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='1337',Rsrc='someRobot')", "type": "ZEWM_ROBCO_SRV.Robot", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='1337',Rsrc='someRobot')" } } }
+            let res = await tools.getEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+            await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+            assert.deepStrictEqual(res.body, exp)
+        })
+
+        // is 200 the right status code here?
+        // cant find it in ABAP code
+        it('verify that http status code is 200', async() => {
+            await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+            let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "STAT" })
+            await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+            assert.deepStrictEqual(res.statusCode, 200)
+        })
+    })
 })
