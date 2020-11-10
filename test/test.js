@@ -549,9 +549,6 @@ describe('Custom Function \'SendFirstConfirmationError\'', () => {
 describe('Custom Function \'SetRobotStatus\'', () => {
     describe('Errorcases', () => {
         describe('ROBOT_NOT_FOUND', () => {
-            // it('someRobot exists', async () => {
-            //     await tools.getEntity("RobotSet", {"Lgnum":"1337", "Rsrc":"someRobot"})
-            // })
             it('check for correct business_error', async () => {
                 await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
                 let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "someExccode" })

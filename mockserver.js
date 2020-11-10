@@ -654,6 +654,7 @@ require('node-ui5/factory')({
 						},
 						error: function(err) {
 							console.log(JSON.stringify(err))
+							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_STATUS_NOT_SET" } })
 						}
 					})
 				}
