@@ -817,6 +817,78 @@ require('node-ui5/factory')({
 		};
 
 
+		var UnassignRobotFromWarehouseOrder = function (oXhr, sUrlParams) {
+			console.log("invoking UnassignRobotFromWarehouseOrder")
+			console.log("sUrlParams: " + sUrlParams)
+			var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
+				var p = curr.split("=")
+				prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+				return prev
+			}, {})
+			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+			var uri = ""
+			var abort = false
+
+			// 1. Check if the robot resource exists in EWM
+			// yes: continue
+			// no: return business_error: ROBOT_NOT_FOUND
+			uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+			console.log("checking if robot resource exists at: " + uri)
+			jQuery.ajax({
+				url: uri,
+				dataType: 'json',
+				async: false,
+				success: function (res) {
+					console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+				},
+				error: function (err) {
+					console.log(JSON.stringify(err))
+					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+					oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
+					abort = true
+				}
+			})
+			if (abort) return true
+
+			// 2. Check if the WarehouseOrder exists in EWM
+			// yes: continue
+			// no: return business_error: NO_ORDER_FOUND
+			uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+			console.log("checking if WHO exists at: " + uri)
+			jQuery.ajax({
+				url: uri,
+				dataType: 'json',
+				async: false,
+				success: function (res) {
+					console.log("found that WHO " + oUrlParams.Who + " exists")
+
+					// Actually unassign robot from WHO
+					delete oUrlParams.Rsrc
+					jQuery.ajax({
+						url: uri,
+						method: 'PUT',
+						data: JSON.stringify(oUrlParams),
+						async: false,
+						success: function (res) {
+							oXhr.respondJSON(200, {}, res)
+						},
+						error: function (err) {
+							console.log(JSON.stringify(err))
+							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
+						}
+					})
+				},
+				error: function (err) {
+					console.log(JSON.stringify(err))
+					console.log("WHO " + oUrlParams.Who + " does not exist")
+					oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					abort = true
+				}
+			})
+			if (abort) return true
+		}
+
+
 
 
 		// End of function imports
@@ -883,6 +955,11 @@ require('node-ui5/factory')({
 			method: "POST",
 			path: "AssignRobotToWarehouseOrder\\?(.*)",
 			response: AssignRobotToWarehouseOrder
+		})
+		aRequests.push({
+			method: "POST",
+			path: "UnassignRobotFromWarehouseOrder\\?(.*)",
+			response: UnassignRobotFromWarehouseOrder
 		})
 		ms.setRequests(aRequests);
 
