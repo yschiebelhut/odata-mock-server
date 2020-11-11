@@ -30,13 +30,13 @@ Current status of those function imports is:
     * GetRobotWarehouseOrders
     * SendFirstConfirmationError
     * SetRobotStatus
+    * UnsetWarehouseOrderInProcessStatus
 * **WIP**
     * AssignRobotToWarehouseOrder
         * working with basic functionality, special error cases missing
     * GetInProcessWarehouseOrders
     * UnassignRobotFromWarehouseOrder
         * working with basic functionality, special error cases missing
-    * UnsetWarehouseOrderInProcessStatus
 * **not implemented yet**
     * GetNewRobotTypeWarehouseOrders
     * SendSecondConfirmationError
