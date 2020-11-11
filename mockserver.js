@@ -49,7 +49,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 					abort = true
 				}
 			})
@@ -71,7 +71,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("warehouseorder " + oUrlParams.Who + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					abort = true
 				}
 			})
@@ -98,7 +98,7 @@ require('node-ui5/factory')({
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
 					abort = true
 				}
 			})
@@ -115,7 +115,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("warehouseorder " + oUrlParams.Who + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
 				}
 			})
 
@@ -151,7 +151,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 					abort = true
 				}
 			})
@@ -170,7 +170,7 @@ require('node-ui5/factory')({
 				success: function (res) {
 					if (res.d.results.length > 0) {
 						console.log("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
-						oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
 						abort = true
 					} else {
 						console.log("no warehouseorders associated with robot " + oUrlParams.Rsrc)
@@ -178,7 +178,7 @@ require('node-ui5/factory')({
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
-					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
 					abort = true
 				}
 			})
@@ -206,13 +206,13 @@ require('node-ui5/factory')({
 						})
 					} else {
 						console.log("no open unassigned warehouseorder available")
-						oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
-					oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					abort = true
 				}
 			})
@@ -270,7 +270,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -292,14 +292,14 @@ require('node-ui5/factory')({
 						console.log("warehouseorder is not yet confirmed")
 					} else {
 						console.log("warehouseorder has already been confirmed")
-						oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("warehouseorder " + who + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -321,14 +321,14 @@ require('node-ui5/factory')({
 						wht = res.d
 					} else {
 						console.log("warehousetask has already been confirmed")
-						oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -355,7 +355,7 @@ require('node-ui5/factory')({
 				},
 				error: function (err) {
 					console.log("unable to delete 'Vltyp', 'Vlber' and 'Vlpla' from " + oUrlParams.Tanum)
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 				}
 			})
 
@@ -392,7 +392,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -415,14 +415,14 @@ require('node-ui5/factory')({
 						console.log("warehouseorder is not yet confirmed")
 					} else {
 						console.log("warehouseorder has already been confirmed")
-						oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("warehouseorder " + who + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -444,14 +444,14 @@ require('node-ui5/factory')({
 						wht = res.d
 					} else {
 						console.log("warehousetask has already been confirmed")
-						oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -474,7 +474,7 @@ require('node-ui5/factory')({
 				},
 				error: function (err) {
 					console.log("unable to set 'Tostat' to 'C' for warehousetask " + oUrlParams.Tanum)
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -502,13 +502,13 @@ require('node-ui5/factory')({
 					})
 					if (!allTasksComplete) {
 						console.log("there are still open warehousetasks for who " + who)
-						oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						abort = true
 					}
 				},
 				error: function (err) {
 					console.log("unable to retrieve warehousetasks having who " + who)
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 					abort = true
 				}
 			})
@@ -532,7 +532,7 @@ require('node-ui5/factory')({
 				},
 				error: function (err) {
 					console.log("unable to set 'Status' to 'C' for warehouseorder " + who)
-					oXhr.respondJSON(400, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 				}
 			})
 
@@ -569,7 +569,7 @@ require('node-ui5/factory')({
 				error: function (err) {
 					console.log(JSON.stringify(err))
 					console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
-					oXhr.respondJSON(400, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 					abort = true
 				}
 			})
@@ -591,12 +591,12 @@ require('node-ui5/factory')({
 						oXhr.respondJSON(200, {}, res)
 						abort = true
 					} else {
-						oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+						oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
-					oXhr.respondJSON(400, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 					abort = true
 				}
 			})

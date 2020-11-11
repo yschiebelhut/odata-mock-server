@@ -230,9 +230,9 @@ describe('Custom Function \'GetNewRobotWarehouseOrder\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "ROBOT_NOT_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 let res = await tools.oDataPostFunction("GetNewRobotWarehouseOrder", {})
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
 
@@ -245,9 +245,9 @@ describe('Custom Function \'GetNewRobotWarehouseOrder\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 let res = await tools.oDataPostFunction("GetNewRobotWarehouseOrder", { "Lgnum": "1337", "Rsrc": "Isaac" })
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
 
@@ -259,11 +259,11 @@ describe('Custom Function \'GetNewRobotWarehouseOrder\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "ROBOT_HAS_ORDER")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 403', async () => {
                 await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "123456", "Rsrc": "Asimov", "Status": "D" })
 
                 let res = await tools.oDataPostFunction("GetNewRobotWarehouseOrder", { "Lgnum": "1337", "Rsrc": "Asimov" })
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
     })
@@ -297,9 +297,9 @@ describe('Custom Function \'GetRobotWarehouseOrders\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "ROBOT_NOT_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 let res = await tools.oDataGetFunction("GetRobotWarehouseOrders", {})
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
 
@@ -311,11 +311,11 @@ describe('Custom Function \'GetRobotWarehouseOrders\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "Turtlebot-B" })
 
                 let res = await tools.oDataGetFunction("GetRobotWarehouseOrders", { "Lgnum": "1337", "Rsrc": "Turtlebot-B" })
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
     })
@@ -351,9 +351,9 @@ describe('Custom Function \'ConfirmWarehouseTaskFirstStep\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTaskFirstStep", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Cobot123" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
 
@@ -366,9 +366,9 @@ describe('Custom Function \'ConfirmWarehouseTaskFirstStep\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTaskFirstStep", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Isaac" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
 
@@ -380,9 +380,9 @@ describe('Custom Function \'ConfirmWarehouseTaskFirstStep\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTaskFirstStep", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Isaac" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
         })
@@ -420,9 +420,9 @@ describe('Custom Function \'ConfirmWarehouseTask\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTask", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Cobot123" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
 
@@ -438,9 +438,9 @@ describe('Custom Function \'ConfirmWarehouseTask\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTask", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Isaac" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
 
@@ -452,9 +452,9 @@ describe('Custom Function \'ConfirmWarehouseTask\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTask", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Isaac" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
 
@@ -466,9 +466,9 @@ describe('Custom Function \'ConfirmWarehouseTask\'', () => {
                     assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_TASK_NOT_CONFIRMED")
                 })
 
-                it('verify that http status code is 400', async () => {
+                it('verify that http status code is 404', async () => {
                     let res = await tools.oDataPostFunction("ConfirmWarehouseTask", { "Lgnum": "1337", "Tanum": "abcde", "Rsrc": "Isaac" })
-                    assert.deepStrictEqual(res.statusCode, 400)
+                    assert.deepStrictEqual(res.statusCode, 404)
                 })
             })
         })
@@ -504,9 +504,9 @@ describe('Custom Function \'SendFirstConfirmationError\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "ROBOT_NOT_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 let res = await tools.oDataPostFunction("SendFirstConfirmationError", { "Lgnum": "1337", "Who": "someWho", "Rsrc": "someRobot" })
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
 
@@ -518,9 +518,9 @@ describe('Custom Function \'SendFirstConfirmationError\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
             })
 
-            it('verify that http status code is 400', async () => {
+            it('verify that http status code is 404', async () => {
                 let res = await tools.oDataPostFunction("SendFirstConfirmationError", { "Lgnum": "1337", "Who": "someWho", "Rsrc": "someRobot" })
-                assert.deepStrictEqual(res.statusCode, 400)
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
     })
