@@ -61,7 +61,6 @@ describe('Deleting Entities', () => {
 })
 
 
-
 describe('Creating Entities', () => {
     describe('Create Robot', () => {
         it('should return json with robot', async () => {
@@ -102,7 +101,6 @@ describe('Creating Entities', () => {
         })
     })
 })
-
 
 
 describe('Retrieving Entities', () => {
@@ -147,7 +145,6 @@ describe('Retrieving Entities', () => {
 })
 
 
-
 describe('Retrieving Entitylists', () => {
     describe('Get Robots', () => {
         it('get all robots', async () => {
@@ -187,7 +184,6 @@ describe('Retrieving Entitylists', () => {
 })
 
 
-
 describe('Update Entities', () => {
     describe('Update Robot', () => {
         it('verify that http status code is 204', async () => {
@@ -219,7 +215,6 @@ describe('Malformed Requests', () => {
         })
     })
 })
-
 
 
 describe('Custom Function \'GetNewRobotWarehouseOrder\'', () => {
@@ -544,7 +539,6 @@ describe('Custom Function \'SendFirstConfirmationError\'', () => {
 })
 
 
-
 describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
     describe('Errorcases', () => {
         describe('NO_ORDER_FOUND', () => {
@@ -645,7 +639,6 @@ describe('Custom Function \'SetRobotStatus\'', () => {
         })
     })
 })
-
 
 
 describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
