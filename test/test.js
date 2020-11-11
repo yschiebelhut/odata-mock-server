@@ -688,17 +688,6 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
             })
         })
 
-        describe('WAREHOUSE_ORDER_LOCKED', () => {
-            it('check for correct business_error', async () => {
-                assert.deepStrictEqual(true, false)
-            })
-
-            it('verify that http status code is 404', async () => {
-                // assert.deepStrictEqual(res.statusCode, 404)
-                assert.deepStrictEqual(true, false)
-            })
-        })
-
         describe('WAREHOUSE_ORDER_ASSIGNED', () => {
             it('check for correct business_error', async () => {
                 await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot" })
@@ -765,7 +754,6 @@ describe('Custom Function \'UnassignRobotFromWarehouseOrder\'', () => {
     describe('Errorcases', () => {
         // ROBOT_NOT_FOUND
         // WHO_NOT_FOUND: NO_ORDER_FOUND
-        // WHO_LOCKED: WAREHOUSE_ORDER_LOCKED
         // WHO_IN_PROCESS: WAREHOUSE_ORDER_IN_PROCESS
         // WHO_NOT_UNASSIGNED: WAREHOUSE_ORDER_NOT_UNASSIGNED
         describe('ROBOT_NOT_FOUND', () => {
@@ -805,17 +793,6 @@ describe('Custom Function \'UnassignRobotFromWarehouseOrder\'', () => {
 
                 await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
                 assert.deepStrictEqual(res.statusCode, 404)
-            })
-        })
-
-        describe('WAREHOUSE_ORDER_LOCKED', () => {
-            it('check for correct business_error', async () => {
-                assert.deepStrictEqual(true, false)
-            })
-
-            it('verify that http status code is 404', async () => {
-                // assert.deepStrictEqual(res.statusCode, 404)
-                assert.deepStrictEqual(true, false)
             })
         })
 
