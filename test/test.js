@@ -795,15 +795,26 @@ describe('Custom Function \'UnassignRobotFromWarehouseOrder\'', () => {
                 assert.deepStrictEqual(res.statusCode, 404)
             })
         })
-
+        
         describe('WAREHOUSE_ORDER_IN_PROCESS', () => {
             it('check for correct business_error', async () => {
-                assert.deepStrictEqual(true, false)
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot", "Status": "D" })
+                let res = await tools.oDataPostFunction("UnassignRobotFromWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+            
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                assert.deepStrictEqual(res.body.error.code, "WAREHOUSE_ORDER_IN_PROCESS")
             })
-
+            
             it('verify that http status code is 404', async () => {
-                // assert.deepStrictEqual(res.statusCode, 404)
-                assert.deepStrictEqual(true, false)
+                await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
+                await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890", "Rsrc": "someRobot", "Status": "D" })
+                let res = await tools.oDataPostFunction("UnassignRobotFromWarehouseOrder", { "Lgnum": "1337", "Rsrc": "someRobot", "Who": "1234567890" })
+            
+                await tools.deleteEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" }, { "Lgnum": "1337", "Rsrc": "someRobot" })
+                await tools.deleteEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" }, { "Lgnum": "1337", "Who": "1234567890" })
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
 

@@ -741,7 +741,7 @@ require('node-ui5/factory')({
 			})
 			if (abort) return true
 
-			// TODO: implement WHO_LOCKED && WHT_ASSIGNED
+			// TODO: implement WHT_ASSIGNED
 
 
 		}
@@ -862,21 +862,29 @@ require('node-ui5/factory')({
 				success: function (res) {
 					console.log("found that WHO " + oUrlParams.Who + " exists")
 
-					// Actually unassign robot from WHO
-					delete oUrlParams.Rsrc
-					jQuery.ajax({
-						url: uri,
-						method: 'PUT',
-						data: JSON.stringify(oUrlParams),
-						async: false,
-						success: function (res) {
-							oXhr.respondJSON(200, {}, res)
-						},
-						error: function (err) {
-							console.log(JSON.stringify(err))
-							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
-						}
-					})
+					// 3. Check if WarehouseOrder is in Process
+					// yes: return business_error: WAREHOUSE_ORDER_IN_PROCESS
+					// no: actually unassign robot from WHO
+					if (res.d.Status === "D") {
+						console.log("Order is in Process - cannnot unassign")
+						oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_IN_PROCESS" } })
+						abort = true
+					} else {
+						delete oUrlParams.Rsrc
+						jQuery.ajax({
+							url: uri,
+							method: 'PUT',
+							data: JSON.stringify(oUrlParams),
+							async: false,
+							success: function (res) {
+								oXhr.respondJSON(200, {}, res)
+							},
+							error: function (err) {
+								console.log(JSON.stringify(err))
+								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
+							}
+						})
+					}
 				},
 				error: function (err) {
 					console.log(JSON.stringify(err))
