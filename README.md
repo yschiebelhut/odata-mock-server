@@ -1,8 +1,47 @@
 # odata-mock-server
 This project is inspired by the [mockserver-server](https://github.com/ArnaudBuchholz/mockserver-server) by [Arnaud Buchholz](https://github.com/ArnaudBuchholz).
 It makes use of the SAPUI5 MockServer and runs it in a standalone mode to mock a real odata service.
+The aim of the project is to replace the old implementation of the ewm-sim mockserver from [EWM Cloud Robotics](https://github.com/SAP/ewm-cloud-robotics).
 
-## Getting started
+## Getting Started
 To get the project up and running, issue the following commands in the root directory of the project:
 * `npm install`
 * `npm start`
+
+## Current State of Implementation
+Currently, the basic mockserver is up and running. It is served by an express web service.
+This includes:
+* initializing the server from the provided mockdata .json files
+* serving the data as an odata service
+* providing **basic** odata functionality out of the box like
+    * GET,
+    * PUSH,
+    * PUT &
+    * DELETE
+  requests
+
+### Function Imports
+Additionally we are currently working to get the special functionality provided by the oData service of a real EWM system.
+Current status of those function imports is:
+* **fully mocked**
+    * ConfirmWarehouseTask
+    * ConfirmWarehouseTaskFirstStep
+    * GetNewRobotWarehouseOrder
+    * GetRobotWarehouseOrders
+    * SendFirstConfirmationError
+    * SetRobotStatus
+* **WIP**
+    * AssignRobotToWarehouseOrder
+        * working with basic functionality, special error cases missing
+    * GetInProcessWarehouseOrders
+    * UnassignRobotFromWarehouseOrder
+        * working with basic functionality, special error cases missing
+    * UnsetWarehouseOrderInProcessStatus
+* **not implemented yet**
+    * GetNewRobotTypeWarehouseOrders
+    * SendSecondConfirmationError
+
+## Additional Notes
+* Speciall error cases of EWM Systems tend not to occur in a mocked environment. Among them but not limited to:
+    * WAREHOUSE_ORDER_LOCKED
+    * INTERNAL_ERROR
