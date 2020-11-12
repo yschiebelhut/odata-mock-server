@@ -1103,8 +1103,6 @@ require('node-ui5/factory')({
 		// }
 
 
-
-
 		// End of function imports
 
 
@@ -1129,6 +1127,8 @@ require('node-ui5/factory')({
 			bGenerateMissingMockData: true
 		})
 
+
+		// add request handlers for the function imports
 		var aRequests = ms.getRequests()
 		aRequests.push({
 			method: "GET",
