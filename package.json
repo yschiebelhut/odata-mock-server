@@ -10,11 +10,13 @@
 	},
 	"devDependencies": {
 		"mocha": "^8.2.1",
+		"nyc": "^15.1.0",
 		"winston": "^3.3.3"
 	},
 	"scripts": {
 		"start": "node mockserver.js",
-		"test": "mocha"
+		"test": "mocha",
+		"test-coverage": "nyc mocha"
 	},
 	"repository": {
 		"type": "git",
