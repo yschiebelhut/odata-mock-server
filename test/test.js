@@ -208,9 +208,8 @@ describe('Malformed Requests', () => {
 	})
 
 	describe('Point to Illegal Entityset', () => {
-		it('verify that http status code is 404', async () => {
+		it('verify that http status code is 501', async () => {
 			let res = await tools.createEntity("ProtoSet", { "abc": "123!" })
-			// TODO: can this stay like this or has the mockserver config to be changed?
 			assert.deepStrictEqual(res.statusCode, 501)
 		})
 	})
@@ -681,8 +680,6 @@ describe('Custom Function \'SetRobotStatus\'', () => {
 			assert.deepStrictEqual(res.body, exp)
 		})
 
-		// is 200 the right status code here?
-		// cant find it in ABAP code
 		it('verify that http status code is 200', async () => {
 			await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
 			let res = await tools.oDataPostFunction("SetRobotStatus", { "Lgnum": "1337", "Rsrc": "someRobot", "ExccodeOverall": "STAT" })
@@ -695,11 +692,6 @@ describe('Custom Function \'SetRobotStatus\'', () => {
 
 describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
 	describe('Errorcases', () => {
-		// ROBOT_NOT_FOUND
-		// WHO_NOT_FOUND: NO_ORDER_FOUND
-		// WHO_LOCKED: WAREHOUSE_ORDER_LOCKED
-		// WHO_ASSIGNED: WAREHOUSE_ORDER_ASSIGNED
-		// WHT_ASSIGNED: WAREHOUSE_TASK_ASSIGNED
 		describe('ROBOT_NOT_FOUND', () => {
 			it('check for correct business_error', async () => {
 				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
@@ -776,8 +768,6 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
 			assert.deepStrictEqual(res.body, exp)
 		})
 
-		// is 200 the right status code here?
-		// cant find it in ABAP code
 		it('verify that http status code is 200', async () => {
 			await tools.createEntity("RobotSet", { "Lgnum": "1337", "Rsrc": "someRobot" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
@@ -794,10 +784,6 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
 
 describe('Custom Function \'UnassignRobotFromWarehouseOrder\'', () => {
 	describe('Errorcases', () => {
-		// ROBOT_NOT_FOUND
-		// WHO_NOT_FOUND: NO_ORDER_FOUND
-		// WHO_IN_PROCESS: WAREHOUSE_ORDER_IN_PROCESS
-		// WHO_NOT_UNASSIGNED: WAREHOUSE_ORDER_NOT_UNASSIGNED
 		describe('ROBOT_NOT_FOUND', () => {
 			it('check for correct business_error', async () => {
 				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1234567890" })
