@@ -590,7 +590,6 @@ describe('Custom Function \'SendSecondConfirmationError\'', () => {
 
 
 describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
-
     describe('Errorcases', () => {
         describe('NO_ORDER_FOUND', () => {
             it('checks for correct business_error', async() => {
