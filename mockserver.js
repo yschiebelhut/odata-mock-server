@@ -8,15 +8,12 @@ require('node-ui5/factory')({
 }).then(() => {
 	process.on('unhandledRejection', error => {
 		console.log('unhandledRejection'.red, error.message.gray)
-		//console.log(error)
-		//console.log(error.stack)
-	});
+	})
 	sap.ui.require([
 		"jquery.sap.global",
 		"sap/ui/core/util/MockServer"
 	], function (jQuery, MockServer) {
 		console.log("import of node-ui5 successful!")
-
 
 
 		// Begin of function imports
@@ -121,6 +118,7 @@ require('node-ui5/factory')({
 			return true
 		}
 
+
 		var GetNewRobotWarehouseOrder = function (oXhr, sUrlParams) {
 			console.log("invoking GetNewRobotWarehouseOrder")
 			// Expected parameters: Lgnum, Rsrc
@@ -218,6 +216,7 @@ require('node-ui5/factory')({
 			})
 			if (abort) return true
 
+
 			// Assign who to robot and update status
 			who.Status = "D"
 			who.Rsrc = oUrlParams.Rsrc
@@ -239,6 +238,7 @@ require('node-ui5/factory')({
 			return true
 		}
 
+
 		var ConfirmWarehouseTaskFirstStep = function (oXhr, sUrlParams) {
 			console.log("invoking ConfirmWarehouseTaskFirstStep")
 			// Expected parameters: Lgnum, Tanum, Rsrc
@@ -251,6 +251,7 @@ require('node-ui5/factory')({
 			var abort = false
 			var who = ""
 			var wht = null
+
 
 			// 1. Verify that warehousetask exists
 			// yes: continue
@@ -273,6 +274,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Verify that warehouseorder Status is not "C"
 			// yes: continue
@@ -301,6 +303,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 3. Verify that warehousetask Tostat is not "C"
 			// yes: continue
@@ -356,6 +359,7 @@ require('node-ui5/factory')({
 			return true
 		}
 
+
 		var ConfirmWarehouseTask = function (oXhr, sUrlParams) {
 			console.log("invoking ConfirmWarehouseTask")
 			// Expected parameters: Lgnum, Tanum
@@ -369,6 +373,7 @@ require('node-ui5/factory')({
 			var who = null
 			var whoObj = null
 			var wht = null
+
 
 			// 1. Verify that warehousetask exists
 			// yes: continue
@@ -391,6 +396,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Verify that warehouseorder Status is not "C"
 			// yes: continue
@@ -421,6 +427,7 @@ require('node-ui5/factory')({
 			})
 			if (abort) return true
 
+
 			// 3. Verify that warehousetask Tostat is not "C"
 			// yes: continue
 			// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
@@ -449,6 +456,7 @@ require('node-ui5/factory')({
 			})
 			if (abort) return true
 
+
 			// 4. Set warehousetask Tostat:"C" to C
 			// yes: continue
 			// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
@@ -470,6 +478,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 5. Check tasks in warehouseorder, if all Tostat="C" -> set Status="C"
 			// yes: 
@@ -503,6 +512,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 5.1. Set Who Status to "C"
 			// yes:  return whoObj
@@ -542,6 +552,7 @@ require('node-ui5/factory')({
 			var uri = ""
 			var abort = false
 
+
 			// 1. Check if the robot resource exists in EWM
 			// yes: continue
 			// no: return business_error: ROBOT_NOT_FOUND
@@ -562,6 +573,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Check if a warehouse order is assigned to the robot
 			// yes: return warehouse order of type WarehouseOrder
@@ -590,6 +602,7 @@ require('node-ui5/factory')({
 			return true
 		}
 
+
 		var SetRobotStatus = function (oXhr, sUrlParams) {
 			console.log("invoking SetRobotStatus")
 			console.log("sUrlParams: " + sUrlParams)
@@ -601,6 +614,7 @@ require('node-ui5/factory')({
 			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
 			var uri = ""
 			var abort = false
+
 
 			// 1. Check if the robot resource exists in EWM
 			// yes: continue
@@ -622,6 +636,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Check if parameter "ExccodeOverall" has the right length
 			// yes: set status for robot (and return robot?)
@@ -660,6 +675,7 @@ require('node-ui5/factory')({
 			var uri = ""
 			var abort = false
 
+
 			// 1. Check if the robot resource exists in EWM
 			// yes: continue
 			// no: return business_error: ROBOT_NOT_FOUND
@@ -680,6 +696,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Check if the WarehouseOrder exists in EWM
 			// yes: continue
@@ -725,65 +742,62 @@ require('node-ui5/factory')({
 			})
 			if (abort) return true
 
-			// TODO: implement WHO_LOCKED && WHT_ASSIGNED
+			// TODO: implement WHT_ASSIGNED
 
 
 		}
 
 
-		 var GetInProcessWarehouseOrders = function(oXhr, sUrlParams) {
-            console.log("invoking GetInProcessWarehouseOrders")
-                // Expected parameters: Lgnum, Rsrc, RsrcType
-            var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
-                var p = curr.split("=")
-                prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
-                return prev
-            }, {})
-            console.log("oUrlParams: " + JSON.stringify(oUrlParams))
-            var uri = ""
-            var abort = false
-
-            // 1. Check if Resourcetype is RB01
-            // yes: response with status 200
-            // no: return business_error: NO_ROBOT_RESOURCE_TYPE
-
-            if (oUrlParams.RsrcType != "RB01") {
-
-                oXhr.respondJSON(404, {}, { "error": { "code": "NO_ROBOT_RESOURCE_TYPE" } })
-                abort = true
-            }
-            if (abort)
-                return true
+		var GetInProcessWarehouseOrders = function (oXhr, sUrlParams) {
+			console.log("invoking GetInProcessWarehouseOrders")
+			// Expected parameters: Lgnum, Rsrc, RsrcType
+			var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
+				var p = curr.split("=")
+				prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+				return prev
+			}, {})
+			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+			var uri = ""
+			var abort = false
 
 
-            // 2. Check if an order in process exists with no ressource assigned
-            // yes: return warehouse order of type WarehouseOrder with status 'D'
-            // no: return business_error: NO_ORDER_FOUND
+			// 1. Check if Resourcetype is RB01
+			// yes: response with status 200
+			// no: return business_error: NO_ROBOT_RESOURCE_TYPE
+			if (oUrlParams.RsrcType != "RB01") {
+				oXhr.respondJSON(404, {}, { "error": { "code": "NO_ROBOT_RESOURCE_TYPE" } })
+				abort = true
+			}
+			if (abort)
+				return true
 
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Status eq 'D' and Rsrc eq ''"
-            console.log("checking if order exists at: " + uri)
-            jQuery.ajax({
 
-                url: uri,
-                dataType: 'json',
-                async: false,
-                success: function(res) {
-                    if (res.d.results.length == 0) {
-                        oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
-                        abort = true
-                    } else {
-                        oXhr.respondJSON(200, {}, res)
-                    }
-                },
-                error: function(err) {
-                    console.log(JSON.stringify(err))
-                    oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
-                    abort = true
-                }
-            })
-            if (abort)
-                return true
-        };
+			// 2. Check if an order in process exists with no ressource assigned
+			// yes: return warehouse order of type WarehouseOrder with status 'D'
+			// no: return business_error: NO_ORDER_FOUND
+			uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Status eq 'D' and Rsrc eq ''"
+			console.log("checking if order exists at: " + uri)
+			jQuery.ajax({
+				url: uri,
+				dataType: 'json',
+				async: false,
+				success: function (res) {
+					if (res.d.results.length == 0) {
+						oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+						abort = true
+					} else {
+						oXhr.respondJSON(200, {}, res)
+					}
+				},
+				error: function (err) {
+					console.log(JSON.stringify(err))
+					oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+					abort = true
+				}
+			})
+			if (abort)
+				return true
+		}
 
 
 		var UnsetWarehouseOrderInProcess = function (oXhr, sUrlParams) {
@@ -827,7 +841,6 @@ require('node-ui5/factory')({
 			// 2. Checks if Who exists, so that Step 3 wouldn't fail
 			// yes: continue
 			// no: return business_error: WHO_STATUS_NOT_UPDATED
-
 			uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
 			console.log("checking if Who exists at: " + uri)
 			jQuery.ajax({
@@ -849,14 +862,12 @@ require('node-ui5/factory')({
 			if (abort)
 				return true
 
+
 			// 3. Unset WHO in process status
 			// yes: Unset status
 			// no: return business_error: WHO_STATUS_NOT_UPDATED
-
 			uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-
 			oUrlParams.Status = ""
-
 			jQuery.ajax({
 				url: uri,
 				method: 'Patch',
@@ -885,6 +896,7 @@ require('node-ui5/factory')({
 			var uri = ""
 			var abort = false
 
+
 			// 1. Check if the robot resource exists in EWM
 			// yes: continue
 			// no: return business_error: ROBOT_NOT_FOUND
@@ -905,6 +917,7 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
+
 
 			// 2. Check if the WarehouseOrder exists in EWM
 			// yes: continue
@@ -964,6 +977,7 @@ require('node-ui5/factory')({
 			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
 			var uri = ""
 			var abort = false
+
 
 			// 1. check if resource type exists in specified warehouse
 			// yes: continue
@@ -1046,10 +1060,10 @@ require('node-ui5/factory')({
 			response: SendFirstConfirmationError
 		})
 		aRequests.push({
-            method: "POST",
-            path: "SendSecondConfirmationError\\?(.*)",
-            response: SendFirstConfirmationError
-        })
+			method: "POST",
+			path: "SendSecondConfirmationError\\?(.*)",
+			response: SendFirstConfirmationError
+		})
 		aRequests.push({
 			method: "POST",
 			path: "SetRobotStatus\\?(.*)",
