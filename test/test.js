@@ -552,6 +552,7 @@ describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
                 assert.deepStrictEqual(res.statusCode, 404)
             })
         })
+
         describe('NO_ROBOT_RESOURCE_TYPE', () => {
             it('checks for correct business_error', async () => {
                 await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1400", "RsrcType": "RB01", "Status": "D", "Who": "someWho" })
@@ -560,21 +561,18 @@ describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
                 assert.deepStrictEqual(res.body.error.code, "NO_ROBOT_RESOURCE_TYPE")
             })
 
-
             it('verify that http status code is 400', async () => {
                 let res = await tools.oDataGetFunction("GetInProcessWarehouseOrders", { "Lgnum": "1400", "RsrcType": "wrongType" })
                 assert.deepStrictEqual(res.statusCode, 404)
             })
         })
     })
+
     describe('Success', () => {
         it('checks for correct response', async () => {
-
-            let exp = {
-                "d": { "results": [{ "Lgnum": "1400", "RsrcType": "RB01", "Status": "D", "Who": "someWho", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')/OpenWarehouseTasks" } } }] }
-            }
-
+            let exp = { "d": { "results": [{ "Lgnum": "1400", "RsrcType": "RB01", "Status": "D", "Who": "someWho", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1400',Who='someWho')/OpenWarehouseTasks" } } }] } }
             let res = await tools.oDataGetFunction("GetInProcessWarehouseOrders", { "Lgnum": "1400", "RsrcType": "RB01" })
+
             assert.deepStrictEqual(res.body, exp)
         })
 
@@ -582,7 +580,6 @@ describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
             let res = await tools.oDataGetFunction("GetInProcessWarehouseOrders", { "Lgnum": "1400", "RsrcType": "RB01" })
             assert.deepStrictEqual(res.statusCode, 200)
         })
-
     })
 })
 
@@ -860,45 +857,38 @@ describe('Custom Function \'UnsetWarehouseOrderInProcess\'', () => {
             it('verify that http status code is 404', async () => {
                 let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "1401", "Who": "wrongWho" })
                 assert.deepStrictEqual(res.statusCode, 404)
-
-            })
-
-            describe('WHO_STATUS_NOT_UPDATED', () => {
-                it('checks for correct business_error', async () => {
-                    let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "wrong", "Who": "someWho" })
-                    assert.deepStrictEqual(res.body.error.code, "WHO_STATUS_NOT_UPDATED")
-                })
-
-                it('verify that http status code is 400', async () => {
-                    let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "wrong", "Who": "someWho" })
-                    assert.deepStrictEqual(res.statusCode, 404)
-
-                })
-
             })
         })
 
-        describe('Success', () => {
-
-            it('checks for initial status', async () => {
-
-                let exp = {
-                    "d": { "Lgnum": "1401", "RsrcType": "RB01", "Status": "", "Who": "someWho", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')/OpenWarehouseTasks" } } }
-                }
-
-                let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "1401", "Who": "someWho" })
-                res = await tools.getEntity("WarehouseOrderSet", { "Lgnum": "1401", "Who": "someWho" })
-                assert.deepStrictEqual(res.body, exp)
+        describe('WHO_STATUS_NOT_UPDATED', () => {
+            it('checks for correct business_error', async () => {
+                let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "wrong", "Who": "someWho" })
+                assert.deepStrictEqual(res.body.error.code, "WHO_STATUS_NOT_UPDATED")
             })
 
-            it('verify that http status code is 200', async () => {
-                let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "1401", "Who": "someWho" })
-                assert.deepStrictEqual(res.statusCode, 200)
+            it('verify that http status code is 400', async () => {
+                let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "wrong", "Who": "someWho" })
+                assert.deepStrictEqual(res.statusCode, 404)
             })
         })
+    })
 
+    describe('Success', () => {
+        it('checks for initial status', async () => {
+            let exp = { "d": { "Lgnum": "1401", "RsrcType": "RB01", "Status": "", "Who": "someWho", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1401',Who='someWho')/OpenWarehouseTasks" } } } }
+            await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "1401", "Who": "someWho" })
+            let res = await tools.getEntity("WarehouseOrderSet", { "Lgnum": "1401", "Who": "someWho" })
+
+            assert.deepStrictEqual(res.body, exp)
+        })
+
+        it('verify that http status code is 200', async () => {
+            let res = await tools.oDataPostFunction("UnsetWarehouseOrderInProcess", { "Lgnum": "1401", "Who": "someWho" })
+            assert.deepStrictEqual(res.statusCode, 200)
+        })
     })
 })
+
 
 //delimiter
 
