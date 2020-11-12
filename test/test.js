@@ -570,10 +570,10 @@ describe('Custom Function \'SendSecondConfirmationError\'', () => {
     })
 
     describe('Success', () => {
-        it('who is returned and \'Status\'=\"\", \'Rsrc\'=\"\" and \'Queue\'=\"ERROR\"', async() => {
+        it('who is returned \'Queue\'=\"ERROR\"', async() => {
             await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1437", "Who": "someWho", "Rsrc": "someRobot", "Status": "D", "Queue": "someQueue" })
 
-            let exp = { "d": { "Lgnum": "1437", "Who": "someWho", "Rsrc": "", "Status": "", "Queue": "ERROR", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')/OpenWarehouseTasks" } } } }
+            let exp = { "d": { "Lgnum": "1437", "Who": "someWho", "Rsrc": "someRobot", "Status": "D", "Queue": "ERROR", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1437',Who='someWho')/OpenWarehouseTasks" } } } }
             let res = await tools.oDataPostFunction("SendSecondConfirmationError", { "Lgnum": "1437", "Who": "someWho", "Rsrc": "someRobot" })
             assert.deepStrictEqual(res.body, exp)
         })

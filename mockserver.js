@@ -118,6 +118,107 @@ require('node-ui5/factory')({
             return true
         }
 
+        var SendSecondConfirmationError = function(oXhr, sUrlParams) {
+            console.log("invoking SendSecondConfirmationError")
+            console.log("sUrlParams: " + sUrlParams)
+                // Expected parameters: Lgnum, Rsrc, Who
+            var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
+                var p = curr.split("=")
+                prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+                return prev
+            }, {})
+            console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+            var uri = ""
+            var abort = false
+
+
+            // 1. Check if the robot resource exists in EWM
+            // yes: continue
+            // no: return business_error: ROBOT_NOT_FOUND
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
+            console.log("checking if robot resource exists at: " + uri)
+            jQuery.ajax({
+                url: uri,
+                dataType: 'json',
+                async: false,
+                success: function(res) {
+                    console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+                },
+                error: function(err) {
+                    console.log(JSON.stringify(err))
+                    console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+                    oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
+                    abort = true
+                }
+            })
+            if (abort) return true
+
+
+            // 2. Check if the who exists in EWM
+            // yes: continue
+            // no: return business_error: NO_ORDER_FOUND
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            console.log("checking if warehouseorder exists at: " + uri)
+            jQuery.ajax({
+                url: uri,
+                dataType: 'json',
+                async: false,
+                success: function(res) {
+                    console.log("found that warehouseorder " + oUrlParams.Who + " exists")
+                },
+                error: function(err) {
+                    console.log(JSON.stringify(err))
+                    console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+                    oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+                    abort = true
+                }
+            })
+            if (abort) return true
+
+
+            // 3.Queue="ERROR" a 
+            // yes: return who
+            // no: return business_error: QUEUE_NOT_CHANGED
+            let who = {}
+
+            who.Queue = "ERROR"
+
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            console.log("updating entity at " + uri)
+            jQuery.ajax({
+                url: uri,
+                method: 'PATCH',
+                dataType: 'json',
+                async: false,
+                data: JSON.stringify(who),
+                success: function() {
+                    console.log("updated entity Queue")
+                },
+                error: function(err) {
+                    console.log(JSON.stringify(err))
+                    oXhr.respondJSON(404, {}, { "error": { "code": "QUEUE_NOT_CHANGED" } })
+                    abort = true
+                }
+            })
+
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+            console.log("checking if warehouseorder exists at: " + uri)
+            jQuery.ajax({
+                url: uri,
+                dataType: 'json',
+                async: false,
+                success: function(res) {
+                    oXhr.respondJSON(200, {}, res)
+                },
+                error: function(err) {
+                    console.log(JSON.stringify(err))
+                    console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+                    oXhr.respondJSON(404, {}, { "error": { "code": "QUEUE_NOT_CHANGED" } })
+                }
+            })
+            return true
+        }
+
 
         var GetNewRobotWarehouseOrder = function(oXhr, sUrlParams) {
             console.log("invoking GetNewRobotWarehouseOrder")
@@ -1062,7 +1163,7 @@ require('node-ui5/factory')({
         aRequests.push({
             method: "POST",
             path: "SendSecondConfirmationError\\?(.*)",
-            response: SendFirstConfirmationError
+            response: SendSecondConfirmationError
         })
         aRequests.push({
             method: "POST",
