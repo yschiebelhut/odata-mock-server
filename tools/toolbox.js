@@ -3,7 +3,7 @@ var path = require('path')
 
 var { combine, timestamp, label, printf } = format
 var myFormat = printf(info => {
-     return `${info.timestamp} [${info.label}] - ${info.level}: ${info.message}`
+    return `${info.timestamp} [${info.label}] - ${info.level}: ${info.message}`
 })
 
 var logger = createLogger({
@@ -27,7 +27,7 @@ var protocol = "http";
 
 module.exports = {
     createEntity(entitySet, entity) {
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet
         let options = {
             method: 'POST',
             body: entity
@@ -36,7 +36,7 @@ module.exports = {
     },
 
     waitForService() {
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/$metadata"
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/$metadata"
         let options = {
             method: 'GET'
         }
@@ -45,7 +45,7 @@ module.exports = {
 
     getEntity(entitySet, oUrlParams) {
         let sUrlParams = this.buildODataPrimaryQueryFromObject(oUrlParams)
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
         let options = {
             method: 'GET',
             body: {}
@@ -55,7 +55,7 @@ module.exports = {
 
     updateEntity(entitySet, oUrlParams, entity) {
         let sUrlParams = this.buildODataPrimaryQueryFromObject(oUrlParams)
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
         let options = {
             method: 'PATCH',
             body: entity
@@ -64,7 +64,7 @@ module.exports = {
     },
 
     async deleteAllEntities(entitySet, primKeys) {
-        let entities = await this.getEntity(entitySet, { })
+        let entities = await this.getEntity(entitySet, {})
         let promiseStack = []
         entities.body.d.results.forEach(async (elem) => {
             let oUrlParams = {}
@@ -78,40 +78,40 @@ module.exports = {
 
     deleteEntity(entitySet, oUrlParams, entity) {
         let sUrlParams = this.buildODataPrimaryQueryFromObject(oUrlParams)
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + entitySet + sUrlParams
         let options = {
             method: 'DELETE',
             body: entity
         }
         return this.makeRequest(uri, options)
     },
-    
+
     oDataPostFunction(functionName, oUrlParams) {
         let sUrlParams = this.buildUrlParamsFromObject(oUrlParams)
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + functionName + sUrlParams
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + functionName + sUrlParams
         let options = {
             method: 'POST',
             body: {}
         }
         return this.makeRequest(uri, options)
     },
-    
+
     oDataGetFunction(functionName, oUrlParams) {
         let sUrlParams = this.buildUrlParamsFromObject(oUrlParams)
-        let uri = protocol+"://localhost:"+port+"/odata/SAP/ZEWM_ROBCO_SRV/" + functionName + sUrlParams
+        let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/" + functionName + sUrlParams
         let options = {
             url: uri,
             method: 'GET',
             body: {}
         }
-        return this.makeRequest(uri, options) 
+        return this.makeRequest(uri, options)
     },
-    
+
     buildUrlParamsFromObject(oUrlParams) {
         let res = "?"
         Object.keys(oUrlParams).forEach((key, index) => {
             res += key + "=" + oUrlParams[key]
-            if(index < Object.keys(oUrlParams).length -1)
+            if (index < Object.keys(oUrlParams).length - 1)
                 res += "&"
         })
         return res;
@@ -126,20 +126,20 @@ module.exports = {
     },
 
     buildODataPrimaryQueryFromObject(oUrlParams) {
-        if(this.isEmpty(oUrlParams))
+        if (this.isEmpty(oUrlParams))
             return ""
         let res = "("
         Object.keys(oUrlParams).forEach((key, index) => {
             res += key + "='" + oUrlParams[key] + "'"
-            if(index < Object.keys(oUrlParams).length -1)
+            if (index < Object.keys(oUrlParams).length - 1)
                 res += ","
         })
         return (res += ")")
     },
 
     isEmpty(obj) {
-        for(var key in obj) {
-            if(obj.hasOwnProperty(key))
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key))
                 return false;
         }
         return true;
@@ -154,10 +154,10 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             request(
-                uri, 
+                uri,
                 options,
-                function (err, response) {    
-                    if(err) {
+                function (err, response) {
+                    if (err) {
                         logger.error(err)
                         reject(err)
                     } else {
