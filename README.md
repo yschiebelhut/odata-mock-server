@@ -43,5 +43,6 @@ Current status of those function imports is:
 
 ## Additional Notes
 * Speciall error cases of EWM Systems tend not to occur in a mocked environment. Among them but not limited to:
-    * WAREHOUSE_ORDER_LOCKED
     * INTERNAL_ERROR
+    * WAREHOUSE_ORDER_LOCKED
+    * WAREHOUSE_ORDER_NOT_UNASSIGNED
