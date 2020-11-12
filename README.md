@@ -35,7 +35,8 @@ Current status of those function imports is:
     * UnassignRobotFromWarehouseOrder
     * UnsetWarehouseOrderInProcessStatus
 * **WIP**
-    * GetNewRobotTypeWarehouseOrders
+    * ~~GetNewRobotTypeWarehouseOrders~~
+      (Due to missing properties in the oData model, it's currently impossible to implement this mehtod.)
     * SendSecondConfirmationError
 * **not implemented yet**
     * yay, no methods feel lonely
