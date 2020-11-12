@@ -826,7 +826,7 @@ require('node-ui5/factory')({
 
             // 2. Checks if Who exists, so that Step 3 wouldn't fail
             // yes: continue
-            // no: return business_error: WAREHOUSE_ORDER_STATUS_NOT_UPDATED
+            // no: return business_error: WHO_STATUS_NOT_UPDATED
 
             uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
             console.log("checking if Who exists at: " + uri)
@@ -954,7 +954,37 @@ require('node-ui5/factory')({
 
 
         var GetNewRobotTypeWarehouseOrders = function(oXhr, sUrlParams) {
+            console.log("invoking GetNewRobotTypeWarehouseOrders")
+            console.log("sUrlParams: " + sUrlParams)
+            var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
+                var p = curr.split("=")
+                prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+                return prev
+            }, {})
+            console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+            var uri = ""
+            var abort = false
 
+            // 1. check if resource type exists in specified warehouse
+            // yes: continue
+            // no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotResourceTypeSet(Lgnum='" + oUrlParams.Lgnum + "',RsrcType='" + oUrlParams.RsrcType + "')"
+            console.log("check if robot resource type exists in warehoue at " + uri)
+            jQuery.ajax({
+                url: uri,
+                dataType: 'json',
+                async: false,
+                success: function(res) {
+                    console.log("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
+                },
+                error: function(err) {
+                    console.log(JSON.stringify(err))
+                    console.log("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
+                    oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
+                    abort = true
+                }
+            })
+            if (abort) return true
         }
 
 

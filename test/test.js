@@ -590,6 +590,7 @@ describe('Custom Function \'SendSecondConfirmationError\'', () => {
 
 
 describe('Custom Function \'GetInProcessWarehouseOrders\'', () => {
+
     describe('Errorcases', () => {
         describe('NO_ORDER_FOUND', () => {
             it('checks for correct business_error', async() => {
@@ -978,5 +979,10 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
         //         assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
         //     })
         // })
+        describe('NO_ORDER_FOUND', () => {
+            it('check for correct business_error', async() => {
+                assert.deepStrictEqual(true, false)
+            })
+        })
     })
 })
