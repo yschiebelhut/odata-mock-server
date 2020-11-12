@@ -1067,40 +1067,40 @@ require('node-ui5/factory')({
 		}
 
 
-		var GetNewRobotTypeWarehouseOrders = function (oXhr, sUrlParams) {
-			console.log("invoking GetNewRobotTypeWarehouseOrders")
-			console.log("sUrlParams: " + sUrlParams)
-			var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
-				var p = curr.split("=")
-				prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
-				return prev
-			}, {})
-			console.log("oUrlParams: " + JSON.stringify(oUrlParams))
-			var uri = ""
-			var abort = false
+		// var GetNewRobotTypeWarehouseOrders = function(oXhr, sUrlParams) {
+		//     console.log("invoking GetNewRobotTypeWarehouseOrders")
+		//     console.log("sUrlParams: " + sUrlParams)
+		//     var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
+		//         var p = curr.split("=")
+		//         prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+		//         return prev
+		//     }, {})
+		//     console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+		//     var uri = ""
+		//     var abort = false
 
 
-			// 1. check if resource type exists in specified warehouse
-			// yes: continue
-			// no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
-			uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotResourceTypeSet(Lgnum='" + oUrlParams.Lgnum + "',RsrcType='" + oUrlParams.RsrcType + "')"
-			console.log("check if robot resource type exists in warehoue at " + uri)
-			jQuery.ajax({
-				url: uri,
-				dataType: 'json',
-				async: false,
-				success: function (res) {
-					console.log("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
-				},
-				error: function (err) {
-					console.log(JSON.stringify(err))
-					console.log("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
-					oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
-					abort = true
-				}
-			})
-			if (abort) return true
-		}
+		//     // 1. check if resource type exists in specified warehouse
+		//     // yes: continue
+		//     // no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
+		//     uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotResourceTypeSet(Lgnum='" + oUrlParams.Lgnum + "',RsrcType='" + oUrlParams.RsrcType + "')"
+		//     console.log("check if robot resource type exists in warehoue at " + uri)
+		//     jQuery.ajax({
+		//         url: uri,
+		//         dataType: 'json',
+		//         async: false,
+		//         success: function(res) {
+		//             console.log("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
+		//         },
+		//         error: function(err) {
+		//             console.log(JSON.stringify(err))
+		//             console.log("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
+		//             oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
+		//             abort = true
+		//         }
+		//     })
+		//     if (abort) return true
+		// }
 
 
 
@@ -1185,11 +1185,11 @@ require('node-ui5/factory')({
 			path: "UnassignRobotFromWarehouseOrder\\?(.*)",
 			response: UnassignRobotFromWarehouseOrder
 		})
-		aRequests.push({
-			method: "POST",
-			path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
-			response: GetNewRobotTypeWarehouseOrders
-		})
+		// aRequests.push({
+		//     method: "POST",
+		//     path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
+		//     response: GetNewRobotTypeWarehouseOrders
+		// })
 		ms.setRequests(aRequests)
 
 

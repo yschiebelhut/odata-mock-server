@@ -24,25 +24,26 @@ This includes:
 Additionally we are currently working to get the special functionality provided by the oData service of a real EWM system.
 Current status of those function imports is:
 * **fully mocked**
+    * AssignRobotToWarehouseOrder
     * ConfirmWarehouseTask
     * ConfirmWarehouseTaskFirstStep
+    * GetInProcessWarehouseOrders
     * GetNewRobotWarehouseOrder
     * GetRobotWarehouseOrders
     * SendFirstConfirmationError
     * SetRobotStatus
+    * UnassignRobotFromWarehouseOrder
     * UnsetWarehouseOrderInProcessStatus
 * **WIP**
-    * AssignRobotToWarehouseOrder
-        * working with basic functionality, special error cases missing
-    * GetInProcessWarehouseOrders
-    * UnassignRobotFromWarehouseOrder
-        * working with basic functionality, special error cases missing
-* **not implemented yet**
-    * GetNewRobotTypeWarehouseOrders
+    * ~~GetNewRobotTypeWarehouseOrders~~
+      * (Due to missing properties in the oData model, it's currently impossible to implement this mehtod.)
     * SendSecondConfirmationError
+* **not implemented yet**
+    * yay, no methods feel lonely
 
 ## Additional Notes
 * Speciall error cases of EWM Systems tend not to occur in a mocked environment. Among them but not limited to:
     * INTERNAL_ERROR
     * WAREHOUSE_ORDER_LOCKED
     * WAREHOUSE_ORDER_NOT_UNASSIGNED
+    * WAREHOUSE_TASK_ASSIGNED (property missing in oData Entity OpenWarehouseTaskSet)
