@@ -761,17 +761,6 @@ describe('Custom Function \'AssignRobotToWarehouseOrder\'', () => {
                 assert.deepStrictEqual(res.statusCode, 404)
             })
         })
-
-        describe('WAREHOUSE_TASK_ASSIGNED', () => {
-            it('check for correct business_error', async() => {
-                assert.deepStrictEqual(true, false)
-            })
-
-            it('verify that http status code is 404', async() => {
-                // assert.deepStrictEqual(res.statusCode, 404)
-                assert.deepStrictEqual(true, false)
-            })
-        })
     })
 
     describe('Success', () => {
