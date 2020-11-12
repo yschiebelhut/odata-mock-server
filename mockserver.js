@@ -1129,7 +1129,7 @@ require('node-ui5/factory')({
 			bGenerateMissingMockData: true
 		})
 
-		var aRequests = ms.getRequests();
+		var aRequests = ms.getRequests()
 		aRequests.push({
 			method: "GET",
 			path: "GetRobotWarehouseOrders\\?(.*)",
@@ -1216,7 +1216,7 @@ require('node-ui5/factory')({
 
 		// forward HTTP-requests to MockServer
 		app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
-			console.log(req.method + "\t" + req.url);
+			console.log(req.method + "\t" + req.url)
 			window.jQuery.ajax({
 				method: req.method,
 				url: req.url,
