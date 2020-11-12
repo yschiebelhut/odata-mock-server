@@ -122,6 +122,10 @@ require('node-ui5/factory')({
             return true
         };
 
+
+
+
+
         var GetNewRobotWarehouseOrder = function(oXhr, sUrlParams) {
             console.log("invoking GetNewRobotWarehouseOrder")
                 // Expected parameters: Lgnum, Rsrc
@@ -749,8 +753,6 @@ require('node-ui5/factory')({
         var GetInProcessWarehouseOrders = function(oXhr, sUrlParams) {
             console.log("invoking GetInProcessWarehouseOrders")
                 // Expected parameters: Lgnum, Rsrc, RsrcType
-            console.log("sUrlParams: " + sUrlParams)
-                // Expected parameters: Lgnum, Rsrc, Who
             var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
                 var p = curr.split("=")
                 prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
@@ -760,11 +762,25 @@ require('node-ui5/factory')({
             var uri = ""
             var abort = false
 
-            // 1. Check if an order exists
+            // 1. Check if Resourcetype is RB01
+            // yes: response with status 200
+            // no: return business_error: NO_ROBOT_RESOURCE_TYPE
+
+            if (oUrlParams.RsrcType != "RB01") {
+
+                oXhr.respondJSON(404, {}, { "error": { "code": "NO_ROBOT_RESOURCE_TYPE" } })
+                abort = true
+            }
+            if (abort)
+                return true
+
+
+            // 2. Check if an order in process exists with no ressource assigned
             // yes: return warehouse order of type WarehouseOrder with status 'D'
             // no: return business_error: NO_ORDER_FOUND
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Status eq 'D'"
-            console.log("checking if robot resource exists at: " + uri)
+
+            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Status eq 'D' and Rsrc eq ''"
+            console.log("checking if order exists at: " + uri)
             jQuery.ajax({
 
                 url: uri,
@@ -775,7 +791,7 @@ require('node-ui5/factory')({
                         oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
                         abort = true
                     } else {
-                        //  oXhr.respondJSON(200, {}, res)    //Continue
+                        oXhr.respondJSON(200, {}, res)
                     }
                 },
                 error: function(err) {
@@ -786,34 +802,6 @@ require('node-ui5/factory')({
             })
             if (abort)
                 return true
-
-            // 2. Check if Resourcetype is RB01
-            // yes: response with status 200
-            // no: return business_error: NO_ROBOT_RESOURCE_TYPE
-
-            uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and RsrcType eq 'RB01'"
-
-            jQuery.ajax({
-                url: uri,
-                dataType: 'json',
-                async: false,
-                success: function(res) {
-                    if (oUrlParams.RsrcType == "RB01") {
-                        oXhr.respondJSON(200, {}, res)
-                    } else {
-                        oXhr.respondJSON(404, {}, { "error": { "code": "NO_ROBOT_RESOURCE_TYPE" } })
-                        abort = true
-                    }
-                },
-                error: function(err) {
-                    console.log(JSON.stringify(err))
-                    oXhr.respondJSON(404, {}, { "error": { "code": "NO_ROBOT_RESOURCE_TYPE" } })
-                    abort = true
-                }
-            })
-            if (abort)
-                return true
-
         };
 
 
@@ -1047,6 +1035,11 @@ require('node-ui5/factory')({
         aRequests.push({
             method: "POST",
             path: "SendFirstConfirmationError\\?(.*)",
+            response: SendFirstConfirmationError
+        })
+        aRequests.push({
+            method: "POST",
+            path: "SendSecondConfirmationError\\?(.*)",
             response: SendFirstConfirmationError
         })
         aRequests.push({
