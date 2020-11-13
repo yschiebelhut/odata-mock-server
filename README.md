@@ -1,4 +1,6 @@
 [![Coverage Status](https://coveralls.io/repos/yschiebelhut/odata-mock-server/badge.svg?branch=master)](https://coveralls.io/r/yschiebelhut/odata-mock-server?branch=master)
+[![Build Status](https://travis-ci.org/yschiebelhut/odata-mock-server.svg?branch=master)](https://travis-ci.org/yschiebelhut/odata-mock-server)
+
 
 # odata-mock-server
 This project is inspired by the [mockserver-server](https://github.com/ArnaudBuchholz/mockserver-server) by [Arnaud Buchholz](https://github.com/ArnaudBuchholz).
