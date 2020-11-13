@@ -1,8 +1,6 @@
 var server = require('../mockserver.js')
 before(() => {
-	setTimeout(server.init(), 5000)
-	
-	setTimeout(server.stop(), 5000)
+	server.init()
 })
 var assert = require('assert')
 var tools = require('../tools/toolbox.js')

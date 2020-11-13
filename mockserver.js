@@ -1,6 +1,8 @@
 "use strict"
 
-var ms
+const express = require('express')
+const app = express()
+var appServer
 
 module.exports = {
 	init() {
@@ -1113,7 +1115,7 @@ module.exports = {
 
 
 				// creation of the MockServer
-				ms = new MockServer({
+				var ms = new MockServer({
 					rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 				})
 
@@ -1203,8 +1205,7 @@ module.exports = {
 				console.log("ms running")
 
 				// import required frameworks for webservice
-				const express = require('express')
-				const app = express()
+
 				const bodyParser = require('body-parser')
 				const basicAuth = require('express-basic-auth')
 
@@ -1242,7 +1243,7 @@ module.exports = {
 				})
 
 				// start webservice on PORT 8080
-				app.listen(8080, () => {
+				appServer = app.listen(8080, () => {
 					console.log("express-app running")
 				})
 			})
@@ -1251,22 +1252,6 @@ module.exports = {
 
 
 	stop() {
-		// require('node-ui5/factory')({
-		// 	exposeAsGlobals: true,
-		// 	resourceroots: {
-		// 		myApp: __dirname
-		// 	}
-		// }).then(() => {
-		// 	process.on('unhandledRejection', error => {
-		// 		console.log('unhandledRejection'.red, error.message.gray)
-		// 	})
-		// 	sap.ui.require([
-		// 		// "jquery.sap.global",
-		// 		"sap/ui/core/util/MockServer"
-		// 	], function (MockServer) {
-		// 		MockServer.stopAll()
-		// 	})
-		// })
-		ms.stop()
+		appServer.close()
 	}
 }
