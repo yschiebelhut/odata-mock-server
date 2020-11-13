@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/yschiebelhut/odata-mock-server/badge.svg?branch=master)](https://coveralls.io/r/yschiebelhut/odata-mock-server?branch=master)
+
 # odata-mock-server
 This project is inspired by the [mockserver-server](https://github.com/ArnaudBuchholz/mockserver-server) by [Arnaud Buchholz](https://github.com/ArnaudBuchholz).
 It makes use of the SAPUI5 MockServer and runs it in a standalone mode to mock a real odata service.
