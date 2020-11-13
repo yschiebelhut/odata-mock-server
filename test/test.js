@@ -1,4 +1,4 @@
-var server = require('../mockserver.js')
+var server = require('../mockserver')
 before(() => {
 	server.init()
 })
@@ -978,6 +978,5 @@ describe('END OF TESTCASES: Set mock data to initial', () => {
 // })
 
 after(() => {
-	console.log("i am running")
 	server.stop()
 })

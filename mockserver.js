@@ -1,7 +1,5 @@
 "use strict"
 
-const express = require('express')
-const app = express()
 var appServer
 
 module.exports = {
@@ -1205,7 +1203,8 @@ module.exports = {
 				console.log("ms running")
 
 				// import required frameworks for webservice
-
+				const express = require('express')
+				const app = express()
 				const bodyParser = require('body-parser')
 				const basicAuth = require('express-basic-auth')
 
