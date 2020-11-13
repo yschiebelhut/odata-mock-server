@@ -920,8 +920,10 @@ describe('Custom Function \'UnsetWarehouseOrderInProcess\'', () => {
 
 describe('END OF TESTCASES: Set mock data to initial', () => {
 	it('removes surplus data', async () => {
-		await tools.deleteAllEntities("RobotSet", ["Lgnum", "Rsrc"])
-		await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+		let deletion = await tools.deleteAllEntities("RobotSet", ["Lgnum", "Rsrc"])
+		await tools.allPromiseWrapper(deletion)
+		deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+		await tools.allPromiseWrapper(deletion)
 	})
 
 	it('creates initial set', async () => {
