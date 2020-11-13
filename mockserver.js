@@ -842,10 +842,6 @@ require('node-ui5/factory')({
 				}
 			})
 			if (abort) return true
-
-			// TODO: implement WHT_ASSIGNED
-
-
 		}
 
 
