@@ -176,7 +176,7 @@ require('node-ui5/factory')({
 			if (abort) return true
 
 
-			// 3.Queue="ERROR" a 
+			// 3.Queue="ERROR" 
 			// yes: return who
 			// no: return business_error: QUEUE_NOT_CHANGED
 			let who = {}
