@@ -35,13 +35,13 @@ module.exports = {
 		return this.makeRequest(uri, options)
 	},
 
-	waitForService() {
-		let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/$metadata"
-		let options = {
-			method: 'GET'
-		}
-		return this.makeRequest(uri, options)
-	},
+	// waitForService() {
+	// 	let uri = protocol + "://localhost:" + port + "/odata/SAP/ZEWM_ROBCO_SRV/$metadata"
+	// 	let options = {
+	// 		method: 'GET'
+	// 	}
+	// 	return this.makeRequest(uri, options)
+	// },
 
 	getEntity(entitySet, oUrlParams) {
 		let sUrlParams = this.buildODataPrimaryQueryFromObject(oUrlParams)

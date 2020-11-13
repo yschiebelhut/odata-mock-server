@@ -4,7 +4,7 @@
 	"description": "standalone odata mock server based on sapui5 MockServer",
 	"main": "mockserver.js",
 	"scripts": {
-		"start": "node mockserver.js",
+		"start": "node index.js",
 		"test": "mocha",
 		"test-coverage": "nyc mocha",
 		"coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",

@@ -1,3 +1,7 @@
+var server = require('../mockserver')
+before(() => {
+	server.init()
+})
 var assert = require('assert')
 var tools = require('../tools/toolbox.js')
 
@@ -918,6 +922,7 @@ describe('Custom Function \'UnsetWarehouseOrderInProcess\'', () => {
 	})
 })
 
+
 describe('END OF TESTCASES: Set mock data to initial', () => {
 	it('removes surplus data', async () => {
 		let deletion = await tools.deleteAllEntities("RobotSet", ["Lgnum", "Rsrc"])
@@ -927,7 +932,7 @@ describe('END OF TESTCASES: Set mock data to initial', () => {
 	})
 
 	it('creates initial set', async () => {
-		let res = await tools.createEntity("RobotSet", {"ActualBin": "GR-YDI1","ActQueue": "", "Lgnum": "1710", "Rsrc": "robot1", "RsrcType": "RB01","RsrcGrp": "RB02","ExccodeOverall": ""})
+		let res = await tools.createEntity("RobotSet", { "ActualBin": "GR-YDI1", "ActQueue": "", "Lgnum": "1710", "Rsrc": "robot1", "RsrcType": "RB01", "RsrcGrp": "RB02", "ExccodeOverall": "" })
 		assert.deepStrictEqual(res.statusCode, 201)
 	})
 })
@@ -971,3 +976,7 @@ describe('END OF TESTCASES: Set mock data to initial', () => {
 // 		})
 // 	})
 // })
+
+after(() => {
+	server.stop()
+})
