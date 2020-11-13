@@ -5,11 +5,11 @@
 	"main": "mockserver.js",
 	"scripts": {
 		"start": "node index.js",
-		"test": "mocha",
-		"test-coverage": "nyc mocha",
+		"test": "mocha --timeout 30000",
+		"test-coverage": "nyc mocha --timeout 30000",
 		"coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-		"nyan": "mocha --reporter nyan",
-		"nn": "nyc mocha --reporter nyan"
+		"nyan": "mocha --reporter nyan --timeout 30000",
+		"nn": "nyc mocha --reporter nyan --timeout 30000"
 	},
 	"dependencies": {
 		"express": "^4.17.1",
