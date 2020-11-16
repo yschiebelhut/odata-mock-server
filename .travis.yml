@@ -3,7 +3,10 @@ node_js:
   - 14.15.0
 install:
   - npm install
-after_success: 
+
 after_success:
-  - npm run test-coverage
-  - npm run coveralls
+  - npm run coverage
+ 
+  
+  notifications:
+  email: false

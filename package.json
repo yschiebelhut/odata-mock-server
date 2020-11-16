@@ -5,9 +5,8 @@
 	"main": "mockserver.js",
 	"scripts": {
 		"start": "node index.js",
-		"test": "mocha --timeout 30000",
-		"test-coverage": "nyc mocha --timeout 30000",
-		"coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+		"test": "nyc mocha --timeout 30000",
+		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"nyan": "mocha --reporter nyan --timeout 30000",
 		"nn": "nyc mocha --reporter nyan --timeout 30000"
 	},
