@@ -927,15 +927,15 @@ module.exports = {
 
 
 				var UnsetWarehouseOrderInProcess = function (oXhr, sUrlParams) {
-					logger.debug("invoking UnsetWarehouseOrderInProcess")
+					console.log("invoking UnsetWarehouseOrderInProcess")
 					// Expected parameters: Lgnum, Who
-					logger.debug("sUrlParams: " + sUrlParams)
+					console.log("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
+					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -943,8 +943,8 @@ module.exports = {
 					// 1. Check if the Who exists in WhoSet
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
-					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "'"
-					logger.debug("checking if Who exists at: " + uri)
+					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "' and Lgnum='" + oUrlParams.Lgnum + "'"
+					console.log("checking if Who exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -956,7 +956,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							logger.debug(JSON.stringify(err))
+							console.log(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -964,32 +964,8 @@ module.exports = {
 					if (abort) return true
 
 
-					// 2. Checks if Who exists, so that Step 3 wouldn't fail
-					// yes: continue
-					// no: return business_error: WHO_STATUS_NOT_UPDATED
-					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					logger.debug("checking if Who exists at: " + uri)
-					jQuery.ajax({
-						url: uri,
-						dataType: 'json',
-						async: false,
-						success: function (res) {
-							if (res.d.results.length == 0) {
-								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
-								abort = true
-							}
-						},
-						error: function (err) {
-							logger.debug(JSON.stringify(err))
-							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
-							abort = true
-						}
-					})
-					if (abort)
-						return true
-
-
-					// 3. Unset WHO in process status
+		
+					// 2. Unset WHO in process status
 					// yes: Unset status
 					// no: return business_error: WHO_STATUS_NOT_UPDATED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
@@ -1003,7 +979,7 @@ module.exports = {
 							oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
-							logger.debug(JSON.stringify(err))
+							console.log(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
 						}
 					})
