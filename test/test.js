@@ -927,7 +927,7 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
 
 			it('verify that http status code is 404', async () => {
 				await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
-				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "some", "RsrcGrp": "RB02", "NoWho": "2" })
 
 				assert.deepStrictEqual(res.statusCode, 404)
 			})
@@ -961,7 +961,7 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
 			
 			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
-			let res = await tools.oDataPostFunction("GetNewRoboTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+			let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
 			
 			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
 			await tools.allPromiseWrapper(deletion)
@@ -977,7 +977,7 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
 			
 			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
-			let res = await tools.oDataPostFunction("GetNewRoboTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+			let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
 			
 			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
 			await tools.allPromiseWrapper(deletion)

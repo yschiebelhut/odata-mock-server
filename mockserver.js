@@ -964,7 +964,7 @@ module.exports = {
 					if (abort) return true
 
 
-		
+
 					// 2. Unset WHO in process status
 					// yes: Unset status
 					// no: return business_error: WHO_STATUS_NOT_UPDATED
@@ -977,7 +977,7 @@ module.exports = {
 						data: JSON.stringify(oUrlParams),
 						async: false,
 						success: function (res) {
-						//	oXhr.respondJSON(200, {}, res)
+							//	oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
 							logger.debug(JSON.stringify(err))
@@ -1087,40 +1087,54 @@ module.exports = {
 				}
 
 
-				// var GetNewRobotTypeWarehouseOrders = function(oXhr, sUrlParams) {
-				//     logger.debug("invoking GetNewRobotTypeWarehouseOrders")
-				//     logger.debug("sUrlParams: " + sUrlParams)
-				//     var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
-				//         var p = curr.split("=")
-				//         prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
-				//         return prev
-				//     }, {})
-				//     logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
-				//     var uri = ""
-				//     var abort = false
+				var GetNewRobotTypeWarehouseOrders = function (oXhr, sUrlParams) {
+					logger.debug("invoking GetNewRobotTypeWarehouseOrders")
+					logger.debug("sUrlParams: " + sUrlParams)
+					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
+						var p = curr.split("=")
+						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
+						return prev
+					}, {})
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
+					var uri = ""
+					var abort = false
 
 
-				//     // 1. check if resource type exists in specified warehouse
-				//     // yes: continue
-				//     // no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
-				//     uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotResourceTypeSet(Lgnum='" + oUrlParams.Lgnum + "',RsrcType='" + oUrlParams.RsrcType + "')"
-				//     logger.debug("check if robot resource type exists in warehoue at " + uri)
-				//     jQuery.ajax({
-				//         url: uri,
-				//         dataType: 'json',
-				//         async: false,
-				//         success: function(res) {
-				//             logger.debug("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
-				//         },
-				//         error: function(err) {
-				//             logger.debug(JSON.stringify(err))
-				//             logger.debug("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
-				//             oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
-				//             abort = true
-				//         }
-				//     })
-				//     if (abort) return true
-				// }
+					// 1. check if resource type exists in specified warehouse
+					// yes: continue
+					// no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
+					logger.debug("check if robot resource type exists in warehoue at " + uri)
+					if (oUrlParams.RsrcType !== "RB01" || oUrlParams.RsrcGrp !== "RB02") {
+						logger.debug("robot doesn't match hardcoded resource type 'RB01' and resource group 'RB01'")
+						oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
+						return true
+					}
+					logger.debug("robot matches hardcoded types")
+
+
+					// 2. check if there are open WHOs that are not yet assigned to a robot
+					// yes: return oUrlParams.NoWho warehouse orders at maximum
+					// no: return businuess_error: NO_ORDER_FOUND
+					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Rsrc eq '' and Status eq ''&$top=" + oUrlParams.NoWho + ""
+					jQuery.ajax({
+						url: uri,
+						dataType: 'json',
+						async: false,
+						method: 'GET',
+						success: function (res) {
+							logger.debug(res)
+							if (res.d.results.length != 0) {
+								oXhr.respondJSON(200, {}, res)
+							} else {
+								oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+							}
+						},
+						error: function (err) {
+							logger.debug(err)
+							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+						}
+					})
+				}
 
 
 				// End of function imports
@@ -1205,11 +1219,11 @@ module.exports = {
 					path: "UnassignRobotFromWarehouseOrder\\?(.*)",
 					response: UnassignRobotFromWarehouseOrder
 				})
-				// aRequests.push({
-				//     method: "POST",
-				//     path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
-				//     response: GetNewRobotTypeWarehouseOrders
-				// })
+				aRequests.push({
+					method: "POST",
+					path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
+					response: GetNewRobotTypeWarehouseOrders
+				})
 				ms.setRequests(aRequests)
 
 
