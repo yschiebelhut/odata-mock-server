@@ -938,44 +938,77 @@ describe('END OF TESTCASES: Set mock data to initial', () => {
 })
 
 
-// describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
-// 	describe('Errorcases', () => {
-// 		// NO_ORDER_FOUND
-// 		// NO_ROBOT_RESOURCE_TYPE
-// 		describe('RESOURCE_TYPE_IS_NO_ROBOT', () => {
-// 			it('check for correct business_error', async () => {
-// 				await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
-// 				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "some", "RsrcGrp": "Grou", "NoWho": "2" })
+describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
+	describe('Errorcases', () => {
+		describe('RESOURCE_TYPE_IS_NO_ROBOT', () => {
+			it('check for correct business_error', async () => {
+				await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "some", "RsrcGrp": "RB02", "NoWho": "2" })
 
-// 				assert.deepStrictEqual(res.body.error.code, "RESOURCE_TYPE_IS_NO_ROBOT")
-// 			})
+				assert.deepStrictEqual(res.body.error.code, "RESOURCE_TYPE_IS_NO_ROBOT")
+			})
 
-// 			it('verify that http status code is 404', async () => {
-// 				await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
-// 				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "some", "RsrcGrp": "Grou", "NoWho": "2" })
+			it('verify that http status code is 404', async () => {
+				await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
 
-// 				assert.deepStrictEqual(res.statusCode, 404)
-// 			})
-// 		})
-// 		describe('NO_ORDER_FOUND', () => {
-// 		    it('check for correct business_error', async () => {
-// 		        let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
-// 		        await tools.allPromiseWrapper(deletion)
-// 		        await tools.createEntity("WarehouseOrderSet", {"LgNum":"1337", "Who":"12345", })    
-// 		        await tools.createEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
-// 		        let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "some", "RsrcGrp": "Grou", "NoWho": "2" })
+				assert.deepStrictEqual(res.statusCode, 404)
+			})
+		})
 
-// 		        await tools.deleteEntity("RobotResourceTypeSet", { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" }, { "Lgnum": "1337", "RsrcType": "some", "RobotType": "some" })
-// 		        assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
-// 		    })
-// 		})
-// 		describe('NO_ORDER_FOUND', () => {
-// 			it('check for correct business_error', async () => {
-// 				assert.deepStrictEqual(true, false)
-// 			})
-// 		})
-// 	})
-// })
+		describe('NO_ORDER_FOUND', () => {
+			it('check for correct business_error', async () => {
+				let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+				await tools.allPromiseWrapper(deletion)
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+
+				assert.deepStrictEqual(res.body.error.code, "NO_ORDER_FOUND")
+			})
+
+			it('verify that http status code is 404', async () => {
+				let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+				await tools.allPromiseWrapper(deletion)
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+				
+				assert.deepStrictEqual(res.statusCode, 404)
+			})
+		})
+	})
+	
+	describe('Success', () => {
+		it('check if correct set of WarehouseOrders is returned', async () => {
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "2", "Rsrc": "", "Status": "D" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "3", "Rsrc": "someRobot", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
+			
+			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
+			let res = await tools.oDataPostFunction("GetNewRoboTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+			
+			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+			await tools.allPromiseWrapper(deletion)
+
+			assert.deepStrictEqual(res.body, exp)
+		})
+		
+		it('verify that http status code is 200', async () => {
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "2", "Rsrc": "", "Status": "D" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "3", "Rsrc": "someRobot", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "" })
+			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
+			
+			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
+			let res = await tools.oDataPostFunction("GetNewRoboTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+			
+			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+			await tools.allPromiseWrapper(deletion)
+	
+			assert.deepStrictEqual(res.statusCode, 200)
+		})
+	})
+})
 
 after(() => {
 	server.stop()
