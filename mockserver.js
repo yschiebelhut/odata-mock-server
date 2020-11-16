@@ -1,9 +1,30 @@
 "use strict"
 
+const { transports } = require('winston')
+const winston = require('winston')
+var logger = winston.createLogger({
+	transports: [
+		// new transports.Console(),
+		new transports.File({
+			level: 'info',
+			filename: 'log/combined.log'
+		}),
+		new transports.File({
+			level: 'debug',
+			filename: 'log/debug.log'
+		}),
+		new transports.File({
+			level: 'silly',
+			filename: 'log/silly.log'
+		})
+	]
+})
+
 var appServer
 
 module.exports = {
 	init() {
+		logger.info("initializing server")
 		require('node-ui5/factory')({
 			exposeAsGlobals: true,
 			resourceroots: {
@@ -11,26 +32,26 @@ module.exports = {
 			}
 		}).then(() => {
 			process.on('unhandledRejection', error => {
-				console.log('unhandledRejection'.red, error.message.gray)
+				logger.error('unhandledRejection: ' + error.message)
 			})
 			sap.ui.require([
 				"jquery.sap.global",
 				"sap/ui/core/util/MockServer"
 			], function (jQuery, MockServer) {
-				console.log("import of node-ui5 successful!")
+				logger.info("import of node-ui5 successful!")
 
 
 				// Begin of function imports
 				var SendFirstConfirmationError = function (oXhr, sUrlParams) {
-					console.log("invoking SendFirstConfirmationError")
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("invoking SendFirstConfirmationError")
+					logger.debug("sUrlParams: " + sUrlParams)
 					// Expected parameters: Lgnum, Rsrc, Who
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -39,17 +60,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -61,17 +82,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that warehouseorder " + oUrlParams.Who + " exists")
+							logger.debug("found that warehouseorder " + oUrlParams.Who + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -87,7 +108,7 @@ module.exports = {
 					who.Queue = "ERROR"
 					who.Rsrc = ""
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("updating entity at " + uri)
+					logger.debug("updating entity at " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'PATCH',
@@ -95,17 +116,17 @@ module.exports = {
 						async: false,
 						data: JSON.stringify(who),
 						success: function () {
-							console.log("updated entity Status, Queue and Rsrc")
+							logger.debug("updated entity Status, Queue and Rsrc")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
 							abort = true
 						}
 					})
 
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -114,8 +135,8 @@ module.exports = {
 							oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
 						}
 					})
@@ -123,15 +144,15 @@ module.exports = {
 				}
 
 				var SendSecondConfirmationError = function (oXhr, sUrlParams) {
-					console.log("invoking SendSecondConfirmationError")
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("invoking SendSecondConfirmationError")
+					logger.debug("sUrlParams: " + sUrlParams)
 					// Expected parameters: Lgnum, Rsrc, Who
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -140,17 +161,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -162,17 +183,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that warehouseorder " + oUrlParams.Who + " exists")
+							logger.debug("found that warehouseorder " + oUrlParams.Who + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -188,7 +209,7 @@ module.exports = {
 					who.Queue = "ERROR"
 
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("updating entity at " + uri)
+					logger.debug("updating entity at " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'PATCH',
@@ -196,17 +217,17 @@ module.exports = {
 						async: false,
 						data: JSON.stringify(who),
 						success: function () {
-							console.log("updated entity Queue")
+							logger.debug("updated entity Queue")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "QUEUE_NOT_CHANGED" } })
 							abort = true
 						}
 					})
 
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -215,8 +236,8 @@ module.exports = {
 							oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "QUEUE_NOT_CHANGED" } })
 						}
 					})
@@ -225,16 +246,16 @@ module.exports = {
 
 
 				var GetNewRobotWarehouseOrder = function (oXhr, sUrlParams) {
-					console.log("invoking GetNewRobotWarehouseOrder")
+					logger.debug("invoking GetNewRobotWarehouseOrder")
 					// Expected parameters: Lgnum, Rsrc
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("sUrlParams: " + sUrlParams)
 					// Expected parameters: Lgnum, Rsrc, Who
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -243,17 +264,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -265,22 +286,22 @@ module.exports = {
 					// yes: return business_error: ROBOT_HAS_ORDER
 					// no: continue
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
-					console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
+					logger.debug("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
 							if (res.d.results.length > 0) {
-								console.log("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
+								logger.debug("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
 								oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
 								abort = true
 							} else {
-								console.log("no warehouseorders associated with robot " + oUrlParams.Rsrc)
+								logger.debug("no warehouseorders associated with robot " + oUrlParams.Rsrc)
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_HAS_ORDER" } })
 							abort = true
 						}
@@ -295,26 +316,26 @@ module.exports = {
 					// no: return business_error: NO_ORDER_FOUND
 					var who = ""
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '' and Status eq ''"
-					console.log("checking for open warehouseorder that hasn't been assigned yet")
+					logger.debug("checking for open warehouseorder that hasn't been assigned yet")
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log(res)
+							logger.debug(res)
 							if (res.d.results.length > 0) {
-								console.log("found open unassigned warehouseorders")
+								logger.debug("found open unassigned warehouseorders")
 								who = res.d.results.find((element) => {
 									return (element.Queue !== "ERROR")
 								})
 							} else {
-								console.log("no open unassigned warehouseorder available")
+								logger.debug("no open unassigned warehouseorder available")
 								oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -326,18 +347,18 @@ module.exports = {
 					who.Status = "D"
 					who.Rsrc = oUrlParams.Rsrc
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who.Who + "')"
-					console.log("updating entity at " + uri)
+					logger.debug("updating entity at " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'MERGE',
 						data: JSON.stringify(who),
 						async: false,
 						success: function (res) {
-							console.log("updated entity Status and Rsrc")
+							logger.debug("updated entity Status and Rsrc")
 							oXhr.respondJSON(200, {}, { "d": who })
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 						}
 					})
 					return true
@@ -345,7 +366,7 @@ module.exports = {
 
 
 				var ConfirmWarehouseTaskFirstStep = function (oXhr, sUrlParams) {
-					console.log("invoking ConfirmWarehouseTaskFirstStep")
+					logger.debug("invoking ConfirmWarehouseTaskFirstStep")
 					// Expected parameters: Lgnum, Tanum, Rsrc
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
@@ -362,18 +383,18 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("checking if openwarehousetask exists at: " + uri)
+					logger.debug("checking if openwarehousetask exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that openwarehousetask " + oUrlParams.Tanum + " exists for who " + res.d.Who)
+							logger.debug("found that openwarehousetask " + oUrlParams.Tanum + " exists for who " + res.d.Who)
 							who = res.d.Who
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("openwarehousetask " + oUrlParams.Tanum + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -385,24 +406,24 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that warehouseorder " + who + " exists")
+							logger.debug("found that warehouseorder " + who + " exists")
 							if (res.d.Status !== "C") {
-								console.log("warehouseorder is not yet confirmed")
+								logger.debug("warehouseorder is not yet confirmed")
 							} else {
-								console.log("warehouseorder has already been confirmed")
+								logger.debug("warehouseorder has already been confirmed")
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -414,24 +435,24 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
+					logger.debug("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
 							if (res.d.Tostat !== "C") {
-								console.log("warehousetask is not yet confirmed")
+								logger.debug("warehousetask is not yet confirmed")
 								wht = res.d
 							} else {
-								console.log("warehousetask has already been confirmed")
+								logger.debug("warehousetask has already been confirmed")
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("openwarehousetask " + oUrlParams.Tanum + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -446,18 +467,18 @@ module.exports = {
 					wht.Vlber = ""
 					wht.Vlpla = ""
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
+					logger.debug("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'MERGE',
 						data: JSON.stringify(wht),
 						async: false,
 						success: function (res) {
-							console.log("deleted 'Vltyp', 'Vlber' and 'Vlpla' from warehousetask " + oUrlParams.Tanum)
+							logger.debug("deleted 'Vltyp', 'Vlber' and 'Vlpla' from warehousetask " + oUrlParams.Tanum)
 							oXhr.respondJSON(200, {}, { "d": wht })
 						},
 						error: function (err) {
-							console.log("unable to delete 'Vltyp', 'Vlber' and 'Vlpla' from " + oUrlParams.Tanum)
+							logger.debug("unable to delete 'Vltyp', 'Vlber' and 'Vlpla' from " + oUrlParams.Tanum)
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						}
 					})
@@ -466,7 +487,7 @@ module.exports = {
 
 
 				var ConfirmWarehouseTask = function (oXhr, sUrlParams) {
-					console.log("invoking ConfirmWarehouseTask")
+					logger.debug("invoking ConfirmWarehouseTask")
 					// Expected parameters: Lgnum, Tanum
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
@@ -484,18 +505,18 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("checking if openwarehousetask exists at: " + uri)
+					logger.debug("checking if openwarehousetask exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that openwarehousetask " + oUrlParams.Tanum + " exists for who " + res.d.Who)
+							logger.debug("found that openwarehousetask " + oUrlParams.Tanum + " exists for who " + res.d.Who)
 							who = res.d.Who
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("openwarehousetask " + oUrlParams.Tanum + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -507,25 +528,25 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
-					console.log("checking if warehouseorder exists at: " + uri)
+					logger.debug("checking if warehouseorder exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that warehouseorder " + who + " exists")
+							logger.debug("found that warehouseorder " + who + " exists")
 							whoObj = res.d
 							if (res.d.Status !== "C") {
-								console.log("warehouseorder is not yet confirmed")
+								logger.debug("warehouseorder is not yet confirmed")
 							} else {
-								console.log("warehouseorder has already been confirmed")
+								logger.debug("warehouseorder has already been confirmed")
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("warehouseorder " + who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -537,24 +558,24 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
+					logger.debug("checking if openwarehousetask " + oUrlParams.Tanum + " Tostat is 'C' at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
 							if (res.d.Tostat !== "C") {
-								console.log("warehousetask is not yet confirmed")
+								logger.debug("warehousetask is not yet confirmed")
 								wht = res.d
 							} else {
-								console.log("warehousetask has already been confirmed")
+								logger.debug("warehousetask has already been confirmed")
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("openwarehousetask " + oUrlParams.Tanum + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("openwarehousetask " + oUrlParams.Tanum + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -567,17 +588,17 @@ module.exports = {
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					wht.Tostat = "C"
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet(Lgnum='" + oUrlParams.Lgnum + "',Tanum='" + oUrlParams.Tanum + "')"
-					console.log("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
+					logger.debug("deleting 'Vltyp', 'Vlber' and 'Vlpla' from openwarehousetask " + oUrlParams.Tanum + " at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'MERGE',
 						data: JSON.stringify(wht),
 						async: false,
 						success: function (res) {
-							console.log("set 'Tostat' to 'C' for warehousetask " + oUrlParams.Tanum)
+							logger.debug("set 'Tostat' to 'C' for warehousetask " + oUrlParams.Tanum)
 						},
 						error: function (err) {
-							console.log("unable to set 'Tostat' to 'C' for warehousetask " + oUrlParams.Tanum)
+							logger.debug("unable to set 'Tostat' to 'C' for warehousetask " + oUrlParams.Tanum)
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -589,29 +610,29 @@ module.exports = {
 					// yes: 
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet?$filter=Who eq '" + who + "'"
-					console.log("checking all tasks for who " + who + " regarding their 'Tostat'")
+					logger.debug("checking all tasks for who " + who + " regarding their 'Tostat'")
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found warehousetasks for who " + who + ", checking Tostat")
+							logger.debug("found warehousetasks for who " + who + ", checking Tostat")
 
 							var allTasksComplete = true
 							res.d.results.forEach((task) => {
-								console.log(task)
+								logger.debug(task)
 								if (task.Tostat !== "C") {
 									allTasksComplete = false
 								}
 							})
 							if (!allTasksComplete) {
-								console.log("there are still open warehousetasks for who " + who)
+								logger.debug("there are still open warehousetasks for who " + who)
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 								abort = true
 							}
 						},
 						error: function (err) {
-							console.log("unable to retrieve warehousetasks having who " + who)
+							logger.debug("unable to retrieve warehousetasks having who " + who)
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 							abort = true
 						}
@@ -624,18 +645,18 @@ module.exports = {
 					// no: return business_error: WAREHOUSE_TASK_NOT_CONFIRMED
 					whoObj.Status = "C"
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + who + "')"
-					console.log("setting Status to 'C' for warehouseorder " + who + " at: " + uri)
+					logger.debug("setting Status to 'C' for warehouseorder " + who + " at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						method: 'MERGE',
 						data: JSON.stringify(whoObj),
 						async: false,
 						success: function (res) {
-							console.log("set 'Status' to 'C' for warehouseorder " + who)
+							logger.debug("set 'Status' to 'C' for warehouseorder " + who)
 							oXhr.respondJSON(200, {}, { "d": whoObj })
 						},
 						error: function (err) {
-							console.log("unable to set 'Status' to 'C' for warehouseorder " + who)
+							logger.debug("unable to set 'Status' to 'C' for warehouseorder " + who)
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_TASK_NOT_CONFIRMED" } })
 						}
 					})
@@ -644,16 +665,16 @@ module.exports = {
 
 
 				var GetRobotWarehouseOrders = function (oXhr, sUrlParams) {
-					console.log("invoking GetRobotWarehouseOrders")
+					logger.debug("invoking GetRobotWarehouseOrders")
 					// Expected parameters: Lgnum, Rsrc
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("sUrlParams: " + sUrlParams)
 					// Expected parameters: Lgnum, Rsrc, Who
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -662,17 +683,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -684,14 +705,14 @@ module.exports = {
 					// yes: return warehouse order of type WarehouseOrder
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Rsrc eq '" + oUrlParams.Rsrc + "' and Status eq 'D'"
-					console.log("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
+					logger.debug("checking if unconfirmed warehouseorder is assigned to robot: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
 							if (res.d.results.length > 0) {
-								console.log("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
+								logger.debug("found incomplete warehouseorders linked to robot " + oUrlParams.Rsrc)
 								oXhr.respondJSON(200, {}, res)
 								abort = true
 							} else {
@@ -699,7 +720,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -709,14 +730,14 @@ module.exports = {
 
 
 				var SetRobotStatus = function (oXhr, sUrlParams) {
-					console.log("invoking SetRobotStatus")
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("invoking SetRobotStatus")
+					logger.debug("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -725,17 +746,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -757,7 +778,7 @@ module.exports = {
 									oXhr.respondJSON(200, {}, res)
 								},
 								error: function (err) {
-									console.log(JSON.stringify(err))
+									logger.debug(JSON.stringify(err))
 									oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_STATUS_NOT_SET" } })
 								}
 							})
@@ -769,14 +790,14 @@ module.exports = {
 
 
 				var AssignRobotToWarehouseOrder = function (oXhr, sUrlParams) {
-					console.log("invoking AssignRobotToWarehouseOrder")
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("invoking AssignRobotToWarehouseOrder")
+					logger.debug("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -785,17 +806,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -807,13 +828,13 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if WHO exists at: " + uri)
+					logger.debug("checking if WHO exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that WHO " + oUrlParams.Who + " exists")
+							logger.debug("found that WHO " + oUrlParams.Who + " exists")
 
 							// 3. check if WHO is already assigned to a robot
 							// yes: return business_error: WAREHOUSE_ORDER_ASSIGNED
@@ -832,15 +853,15 @@ module.exports = {
 										oXhr.respondJSON(200, {}, res)
 									},
 									error: function (err) {
-										console.log(JSON.stringify(err))
+										logger.debug(JSON.stringify(err))
 										oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 									}
 								})
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("WHO " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("WHO " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -854,14 +875,14 @@ module.exports = {
 
 
 				var GetInProcessWarehouseOrders = function (oXhr, sUrlParams) {
-					console.log("invoking GetInProcessWarehouseOrders")
+					logger.debug("invoking GetInProcessWarehouseOrders")
 					// Expected parameters: Lgnum, Rsrc, RsrcType
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -881,7 +902,7 @@ module.exports = {
 					// yes: return warehouse order of type WarehouseOrder with status 'D'
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Lgnum eq '" + oUrlParams.Lgnum + "' and Status eq 'D' and Rsrc eq ''"
-					console.log("checking if order exists at: " + uri)
+					logger.debug("checking if order exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -895,7 +916,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -906,15 +927,15 @@ module.exports = {
 
 
 				var UnsetWarehouseOrderInProcess = function (oXhr, sUrlParams) {
-					console.log("invoking UnsetWarehouseOrderInProcess")
+					logger.debug("invoking UnsetWarehouseOrderInProcess")
 					// Expected parameters: Lgnum, Who
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -923,7 +944,7 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "'"
-					console.log("checking if Who exists at: " + uri)
+					logger.debug("checking if Who exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -935,7 +956,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -947,7 +968,7 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: WHO_STATUS_NOT_UPDATED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if Who exists at: " + uri)
+					logger.debug("checking if Who exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -959,7 +980,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
 							abort = true
 						}
@@ -982,7 +1003,7 @@ module.exports = {
 							oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
 						}
 					})
@@ -990,14 +1011,14 @@ module.exports = {
 
 
 				var UnassignRobotFromWarehouseOrder = function (oXhr, sUrlParams) {
-					console.log("invoking UnassignRobotFromWarehouseOrder")
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("invoking UnassignRobotFromWarehouseOrder")
+					logger.debug("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -1006,17 +1027,17 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: ROBOT_NOT_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet(Lgnum='" + oUrlParams.Lgnum + "',Rsrc='" + oUrlParams.Rsrc + "')"
-					console.log("checking if robot resource exists at: " + uri)
+					logger.debug("checking if robot resource exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that robot resource " + oUrlParams.Rsrc + " exists")
+							logger.debug("found that robot resource " + oUrlParams.Rsrc + " exists")
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("robot resource " + oUrlParams.Rsrc + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("robot resource " + oUrlParams.Rsrc + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "ROBOT_NOT_FOUND" } })
 							abort = true
 						}
@@ -1028,19 +1049,19 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log("checking if WHO exists at: " + uri)
+					logger.debug("checking if WHO exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
 						async: false,
 						success: function (res) {
-							console.log("found that WHO " + oUrlParams.Who + " exists")
+							logger.debug("found that WHO " + oUrlParams.Who + " exists")
 
 							// 3. Check if WarehouseOrder is in Process
 							// yes: return business_error: WAREHOUSE_ORDER_IN_PROCESS
 							// no: actually unassign robot from WHO
 							if (res.d.Status === "D") {
-								console.log("Order is in Process - cannnot unassign")
+								logger.debug("Order is in Process - cannnot unassign")
 								oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_IN_PROCESS" } })
 								abort = true
 							} else {
@@ -1054,15 +1075,15 @@ module.exports = {
 										oXhr.respondJSON(200, {}, res)
 									},
 									error: function (err) {
-										console.log(JSON.stringify(err))
+										logger.debug(JSON.stringify(err))
 										oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_NOT_UNASSIGNED" } })
 									}
 								})
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
-							console.log("WHO " + oUrlParams.Who + " does not exist")
+							logger.debug(JSON.stringify(err))
+							logger.debug("WHO " + oUrlParams.Who + " does not exist")
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -1072,14 +1093,14 @@ module.exports = {
 
 
 				// var GetNewRobotTypeWarehouseOrders = function(oXhr, sUrlParams) {
-				//     console.log("invoking GetNewRobotTypeWarehouseOrders")
-				//     console.log("sUrlParams: " + sUrlParams)
+				//     logger.debug("invoking GetNewRobotTypeWarehouseOrders")
+				//     logger.debug("sUrlParams: " + sUrlParams)
 				//     var oUrlParams = sUrlParams.split("&").reduce(function(prev, curr, i, arr) {
 				//         var p = curr.split("=")
 				//         prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 				//         return prev
 				//     }, {})
-				//     console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+				//     logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 				//     var uri = ""
 				//     var abort = false
 
@@ -1088,17 +1109,17 @@ module.exports = {
 				//     // yes: continue
 				//     // no: return business_error: RESOURCE_TYPE_IS_NO_ROBOT
 				//     uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotResourceTypeSet(Lgnum='" + oUrlParams.Lgnum + "',RsrcType='" + oUrlParams.RsrcType + "')"
-				//     console.log("check if robot resource type exists in warehoue at " + uri)
+				//     logger.debug("check if robot resource type exists in warehoue at " + uri)
 				//     jQuery.ajax({
 				//         url: uri,
 				//         dataType: 'json',
 				//         async: false,
 				//         success: function(res) {
-				//             console.log("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
+				//             logger.debug("robot resource type " + oUrlParams.RsrcType + " exists in warehouse " + oUrlParams.Lgnum)
 				//         },
 				//         error: function(err) {
-				//             console.log(JSON.stringify(err))
-				//             console.log("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
+				//             logger.debug(JSON.stringify(err))
+				//             logger.debug("robot resource type " + oUrlParams.RsrcType + " DOES NOT exist in warehouse " + oUrlParams.Lgnum)
 				//             oXhr.respondJSON(404, {}, { "error": { "code": "RESOURCE_TYPE_IS_NO_ROBOT" } })
 				//             abort = true
 				//         }
@@ -1117,7 +1138,7 @@ module.exports = {
 					rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 				})
 
-				console.log("rootUri set to " + ms.getRootUri())
+				logger.info("rootUri set to " + ms.getRootUri())
 
 				// set the MockServer to automatically respond with a little delay
 				MockServer.config({
@@ -1200,7 +1221,7 @@ module.exports = {
 				// start the MockServer
 				// (also log some debug information)
 				ms.start()
-				console.log("ms running")
+				logger.info("ms running")
 
 				// import required frameworks for webservice
 				const express = require('express')
@@ -1216,11 +1237,11 @@ module.exports = {
 				app.use(basicAuth({
 					users: { 'root': '123' }
 				}))
-				console.log("created express-app with body-parser and authentication")
+				logger.info("created express-app with body-parser and authentication")
 
 				// forward HTTP-requests to MockServer
 				app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
-					console.log(req.method + "\t" + req.url)
+					logger.silly(req.method + "\t" + req.url)
 					window.jQuery.ajax({
 						method: req.method,
 						url: req.url,
@@ -1243,7 +1264,7 @@ module.exports = {
 
 				// start webservice on PORT 8080
 				appServer = app.listen(8080, () => {
-					console.log("express-app running")
+					logger.info("express-app running")
 				})
 			})
 		})
