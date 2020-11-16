@@ -926,8 +926,8 @@ module.exports = {
 				}
 
 
-				var UnsetWarehouseOrderInProcess = function (oXhr, sUrlParams) {
-					console.log("invoking UnsetWarehouseOrderInProcess")
+				var UnsetWarehouseOrderInProcessStatus = function (oXhr, sUrlParams) {
+					console.log("invoking UnsetWarehouseOrderInProcessStatus")
 					// Expected parameters: Lgnum, Who
 					console.log("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
@@ -943,7 +943,7 @@ module.exports = {
 					// 1. Check if the Who exists in WhoSet
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
-					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "' and Lgnum='" + oUrlParams.Lgnum + "'"
+					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "' and Lgnum eq '" + oUrlParams.Lgnum + "'"
 					console.log("checking if Who exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
@@ -969,20 +969,39 @@ module.exports = {
 					// yes: Unset status
 					// no: return business_error: WHO_STATUS_NOT_UPDATED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
+					console.log(uri)
 					oUrlParams.Status = ""
 					jQuery.ajax({
 						url: uri,
-						method: 'Patch',
+						method: 'PATCH',
 						data: JSON.stringify(oUrlParams),
 						async: false,
 						success: function (res) {
-							oXhr.respondJSON(200, {}, res)
+						//	oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
 							console.log(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
 						}
 					})
+
+
+					logger.debug("checking if warehouseorder exists at: " + uri)
+					jQuery.ajax({
+						url: uri,
+						dataType: 'json',
+						async: false,
+						success: function (res) {
+							oXhr.respondJSON(200, {}, res)
+						},
+						error: function (err) {
+							logger.debug(JSON.stringify(err))
+							logger.debug("warehouseorder " + oUrlParams.Who + " does not exist")
+							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
+						}
+					})
+					return true
+
 				}
 
 
@@ -1173,8 +1192,8 @@ module.exports = {
 				})
 				aRequests.push({
 					method: "POST",
-					path: "UnsetWarehouseOrderInProcess\\?(.*)",
-					response: UnsetWarehouseOrderInProcess
+					path: "UnsetWarehouseOrderInProcessStatus\\?(.*)",
+					response: UnsetWarehouseOrderInProcessStatus
 				})
 				aRequests.push({
 					method: "POST",
