@@ -7,15 +7,15 @@ var logger = winston.createLogger({
 		// new transports.Console(),
 		new transports.File({
 			level: 'info',
-			filename: 'combined.log'
+			filename: 'log/combined.log'
 		}),
 		new transports.File({
 			level: 'debug',
-			filename: 'debug.log'
+			filename: 'log/debug.log'
 		}),
 		new transports.File({
 			level: 'silly',
-			filename: 'silly.log'
+			filename: 'log/silly.log'
 		})
 	]
 })
