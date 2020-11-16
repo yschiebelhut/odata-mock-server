@@ -1165,9 +1165,19 @@ module.exports = {
 				// add request handlers for the function imports
 				var aRequests = ms.getRequests()
 				aRequests.push({
-					method: "GET",
-					path: "GetRobotWarehouseOrders\\?(.*)",
-					response: GetRobotWarehouseOrders
+					method: "POST",
+					path: "AssignRobotToWarehouseOrder\\?(.*)",
+					response: AssignRobotToWarehouseOrder
+				})
+				aRequests.push({
+					method: "POST",
+					path: "ConfirmWarehouseTask\\?(.*)",
+					response: ConfirmWarehouseTask
+				})
+				aRequests.push({
+					method: "POST",
+					path: "ConfirmWarehouseTaskFirstStep\\?(.*)",
+					response: ConfirmWarehouseTaskFirstStep
 				})
 				aRequests.push({
 					method: "GET",
@@ -1176,18 +1186,18 @@ module.exports = {
 				})
 				aRequests.push({
 					method: "POST",
+					path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
+					response: GetNewRobotTypeWarehouseOrders
+				})
+				aRequests.push({
+					method: "POST",
 					path: "GetNewRobotWarehouseOrder\\?(.*)",
 					response: GetNewRobotWarehouseOrder
 				})
 				aRequests.push({
-					method: "POST",
-					path: "ConfirmWarehouseTaskFirstStep\\?(.*)",
-					response: ConfirmWarehouseTaskFirstStep
-				})
-				aRequests.push({
-					method: "POST",
-					path: "ConfirmWarehouseTask\\?(.*)",
-					response: ConfirmWarehouseTask
+					method: "GET",
+					path: "GetRobotWarehouseOrders\\?(.*)",
+					response: GetRobotWarehouseOrders
 				})
 				aRequests.push({
 					method: "POST",
@@ -1206,23 +1216,13 @@ module.exports = {
 				})
 				aRequests.push({
 					method: "POST",
-					path: "UnsetWarehouseOrderInProcessStatus\\?(.*)",
-					response: UnsetWarehouseOrderInProcessStatus
-				})
-				aRequests.push({
-					method: "POST",
-					path: "AssignRobotToWarehouseOrder\\?(.*)",
-					response: AssignRobotToWarehouseOrder
-				})
-				aRequests.push({
-					method: "POST",
 					path: "UnassignRobotFromWarehouseOrder\\?(.*)",
 					response: UnassignRobotFromWarehouseOrder
 				})
 				aRequests.push({
 					method: "POST",
-					path: "GetNewRobotTypeWarehouseOrders\\?(.*)",
-					response: GetNewRobotTypeWarehouseOrders
+					path: "UnsetWarehouseOrderInProcessStatus\\?(.*)",
+					response: UnsetWarehouseOrderInProcessStatus
 				})
 				ms.setRequests(aRequests)
 
