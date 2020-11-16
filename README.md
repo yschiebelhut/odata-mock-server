@@ -31,19 +31,20 @@ Current status of those function imports is:
     * AssignRobotToWarehouseOrder
     * ConfirmWarehouseTask
     * ConfirmWarehouseTaskFirstStep
-    * GetInProcessWarehouseOrders
+    * GetInProcessWarehouseOrders¹
+    * GetNewRobotTypeWarehouseOrders¹
     * GetNewRobotWarehouseOrder
     * GetRobotWarehouseOrders
     * SendFirstConfirmationError
+    * SendSecondConfirmationError
     * SetRobotStatus
     * UnassignRobotFromWarehouseOrder
     * UnsetWarehouseOrderInProcessStatus
 * **WIP**
-    * ~~GetNewRobotTypeWarehouseOrders~~
-      * (Due to missing properties in the oData model, it's currently impossible to implement this mehtod.)
-    * SendSecondConfirmationError
 * **not implemented yet**
     * yay, no methods feel lonely
+
+¹ Due to missing properties in the oData model, implementation is only for demo purpose. The returned **values will differ** from an actual EWM system. The resource type is hardcoded to RB01, the resource group to RB02.
 
 ## Additional Notes
 * Speciall error cases of EWM Systems tend not to occur in a mocked environment. Among them but not limited to:
