@@ -927,15 +927,15 @@ module.exports = {
 
 
 				var UnsetWarehouseOrderInProcessStatus = function (oXhr, sUrlParams) {
-					console.log("invoking UnsetWarehouseOrderInProcessStatus")
+					logger.debug("invoking UnsetWarehouseOrderInProcessStatus")
 					// Expected parameters: Lgnum, Who
-					console.log("sUrlParams: " + sUrlParams)
+					logger.debug("sUrlParams: " + sUrlParams)
 					var oUrlParams = sUrlParams.split("&").reduce(function (prev, curr, i, arr) {
 						var p = curr.split("=")
 						prev[decodeURIComponent(p[0])] = decodeURIComponent(p[1]).replace(/\'/g, '')
 						return prev
 					}, {})
-					console.log("oUrlParams: " + JSON.stringify(oUrlParams))
+					logger.debug("oUrlParams: " + JSON.stringify(oUrlParams))
 					var uri = ""
 					var abort = false
 
@@ -944,7 +944,7 @@ module.exports = {
 					// yes: continue
 					// no: return business_error: NO_ORDER_FOUND
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet?$filter=Who eq '" + oUrlParams.Who + "' and Lgnum eq '" + oUrlParams.Lgnum + "'"
-					console.log("checking if Who exists at: " + uri)
+					logger.debug("checking if Who exists at: " + uri)
 					jQuery.ajax({
 						url: uri,
 						dataType: 'json',
@@ -956,7 +956,7 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
 							abort = true
 						}
@@ -969,7 +969,7 @@ module.exports = {
 					// yes: Unset status
 					// no: return business_error: WHO_STATUS_NOT_UPDATED
 					uri = "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='" + oUrlParams.Lgnum + "',Who='" + oUrlParams.Who + "')"
-					console.log(uri)
+					logger.debug(uri)
 					oUrlParams.Status = ""
 					jQuery.ajax({
 						url: uri,
@@ -980,7 +980,7 @@ module.exports = {
 						//	oXhr.respondJSON(200, {}, res)
 						},
 						error: function (err) {
-							console.log(JSON.stringify(err))
+							logger.debug(JSON.stringify(err))
 							oXhr.respondJSON(404, {}, { "error": { "code": "WAREHOUSE_ORDER_STATUS_NOT_UPDATED" } })
 						}
 					})
