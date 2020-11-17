@@ -1,3 +1,4 @@
+process.env.LOGGING_LOGTOFILE = true
 var server = require('../mockserver')
 before(() => {
 	server.init()

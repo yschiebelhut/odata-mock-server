@@ -1,25 +1,6 @@
 "use strict"
 
-const { transports } = require('winston')
-const winston = require('winston')
-var logger = winston.createLogger({
-	transports: [
-		// new transports.Console(),
-		new transports.File({
-			level: 'info',
-			filename: 'log/combined.log'
-		}),
-		new transports.File({
-			level: 'debug',
-			filename: 'log/debug.log'
-		}),
-		new transports.File({
-			level: 'silly',
-			filename: 'log/silly.log'
-		})
-	]
-})
-
+const logger = require('./lib/log.js')
 var appServer
 
 module.exports = {
@@ -1211,7 +1192,7 @@ module.exports = {
 
 				// forward HTTP-requests to MockServer
 				app.all('/odata/SAP/ZEWM_ROBCO_SRV/*', function (req, res) {
-					logger.silly(req.method + "\t" + req.url)
+					logger.debug(req.method + "\t" + req.url)
 					window.jQuery.ajax({
 						method: req.method,
 						url: req.url,
