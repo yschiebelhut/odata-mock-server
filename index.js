@@ -1,2 +1,3 @@
 var server = require('./mockserver')
-server.init()
+server.initExpressApp()
+setTimeout(server.terminateExpressApp, 15000)

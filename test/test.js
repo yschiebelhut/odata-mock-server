@@ -1,7 +1,7 @@
 process.env.LOGGING_LOGTOFILE = true
 var server = require('../mockserver')
 before(() => {
-	server.init()
+	server.initExpressApp()
 })
 var assert = require('assert')
 var tools = require('../tools/toolbox.js')
@@ -947,12 +947,36 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
 				let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
 				await tools.allPromiseWrapper(deletion)
 				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
-				
+
 				assert.deepStrictEqual(res.statusCode, 404)
 			})
 		})
+
+		describe('INTERNAL_ERROR', () => {
+			before(() => {
+				server.terminateMockServer()
+			})
+			it('check for correct business_error', async () => {
+				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "" })
+				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "2", "Rsrc": "", "Status": "D" })
+				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "3", "Rsrc": "someRobot", "Status": "" })
+				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "" })
+				await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
+
+				let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
+				let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
+
+				let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
+				await tools.allPromiseWrapper(deletion)
+
+				assert.deepStrictEqual(res.body.error.code, "INTERNAL_ERROR")
+			})
+			after(() => {
+				server.startMockServer()
+			})
+		})
 	})
-	
+
 	describe('Success', () => {
 		it('check if correct set of WarehouseOrders is returned', async () => {
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "" })
@@ -960,34 +984,34 @@ describe('Custom Function \'GetNewRobotTypeWarehouseOrders\'', () => {
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "3", "Rsrc": "someRobot", "Status": "" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
-			
+
 			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
 			let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
-			
+
 			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
 			await tools.allPromiseWrapper(deletion)
 
 			assert.deepStrictEqual(res.body, exp)
 		})
-		
+
 		it('verify that http status code is 200', async () => {
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "2", "Rsrc": "", "Status": "D" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "3", "Rsrc": "someRobot", "Status": "" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "" })
 			await tools.createEntity("WarehouseOrderSet", { "Lgnum": "1337", "Who": "5", "Rsrc": "", "Status": "" })
-			
+
 			let exp = { "d": { "results": [{ "Lgnum": "1337", "Who": "1", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='1')/OpenWarehouseTasks" } } }, { "Lgnum": "1337", "Who": "4", "Rsrc": "", "Status": "", "__metadata": { "id": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')", "type": "ZEWM_ROBCO_SRV.WarehouseOrder", "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')" }, "OpenWarehouseTasks": { "__deferred": { "uri": "/odata/SAP/ZEWM_ROBCO_SRV/WarehouseOrderSet(Lgnum='1337',Who='4')/OpenWarehouseTasks" } } }] } }
 			let res = await tools.oDataPostFunction("GetNewRobotTypeWarehouseOrders", { "Lgnum": "1337", "RsrcType": "RB01", "RsrcGrp": "RB02", "NoWho": "2" })
-			
+
 			let deletion = await tools.deleteAllEntities("WarehouseOrderSet", ["Lgnum", "Who"])
 			await tools.allPromiseWrapper(deletion)
-	
+
 			assert.deepStrictEqual(res.statusCode, 200)
 		})
 	})
 })
 
 after(() => {
-	server.stop()
+	server.terminateExpressApp()
 })

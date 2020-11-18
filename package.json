@@ -17,6 +17,7 @@
 		"express": "^4.17.1",
 		"express-basic-auth": "^1.2.0",
 		"moment": "^2.29.1",
+		"node-fetch": "^2.6.1",
 		"node-ui5": "^2.0.4"
 	},
 	"devDependencies": {

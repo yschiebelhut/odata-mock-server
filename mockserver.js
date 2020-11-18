@@ -1,10 +1,10 @@
 "use strict"
 
 const logger = require('./lib/log.js')
-var appServer
+var appServer, ms
 
 module.exports = {
-	init() {
+	initExpressApp() {
 		logger.info("initializing server")
 		require('node-ui5/factory')({
 			exposeAsGlobals: true,
@@ -1072,10 +1072,40 @@ module.exports = {
 							}
 						},
 						error: function (err) {
-							logger.debug(err)
-							oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+							logger.debug("im here")
+							// logger.debug(err)
+							// oXhr.respondJSON(404, {}, { "error": { "code": "NO_ORDER_FOUND" } })
+							oXhr.respondJSON(404, {}, { "error": { "code": "INTERNAL_ERROR" } })
 						}
 					})
+				}
+
+				var testfunc = function (oXhr, sUrlParams) {
+					// var uri = "/odata/SAP/ZEWM_ROBCO_SRV/RobotSet"
+					var uri = "http://localhost:8080/odata/SAP/ZEWM_ROBCO_SRV/RobotSet"
+					// jQuery.ajax({
+					// 	url: uri,
+					// 	dataType: 'json',
+					// 	async: false,
+					// 	method: 'GET',
+					// 	success: function (res) {
+					// 		logger.debug("success")
+					// 		oXhr.respondJSON(200, {}, res)
+					// 		console.log(res)
+					// 	},
+					// 	error: function (err) {
+					// 		logger.debug("error")
+					// 	}
+					// })
+					// const fetch = require('node-fetch')
+					logger.log("fetching")
+					// window.fetch(uri, {
+					// 	credentials: 'include'
+					// }).then(res => {
+					// 	oXhr.respondJSON(200, {}, res)
+					// })
+					fetch(uri)
+					logger.log("done?")
 				}
 
 
@@ -1085,7 +1115,7 @@ module.exports = {
 
 
 				// creation of the MockServer
-				var ms = new MockServer({
+				ms = new MockServer({
 					rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
 				})
 
@@ -1166,6 +1196,12 @@ module.exports = {
 					path: "UnsetWarehouseOrderInProcessStatus\\?(.*)",
 					response: UnsetWarehouseOrderInProcessStatus
 				})
+				aRequests.push({
+					method: "GET",
+					// path: "testfunc\\?(.*)",
+					path: new window.RegExp("testfunc\\?(.*)"),
+					response: testfunc
+				})
 				ms.setRequests(aRequests)
 
 
@@ -1222,7 +1258,30 @@ module.exports = {
 	},
 
 
-	stop() {
-		appServer.close()
+	terminateExpressApp() {
+		if (appServer) {
+			appServer.close()
+			logger.debug("express app closed")
+		} else {
+			logger.debug("no express app running, cannot terminate")
+		}
+	},
+
+	terminateMockServer() {
+		if (ms && ms.isStarted()) {
+			ms.stop()
+			logger.debug("mock server terminated")
+		} else {
+			logger.debug("cannot terminate mockserver; mockserver not running or undefined")
+		}
+	},
+
+	startMockServer() {
+		if (ms) {
+			ms.start()
+			logger.debug("mockserver started")
+		} else {
+			logger.debug("mockserver undefined")
+		}
 	}
 }
