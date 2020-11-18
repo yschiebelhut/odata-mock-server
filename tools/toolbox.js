@@ -17,10 +17,8 @@ var logger = createLogger({
 })
 
 var request = require('request').defaults({ rejectUnauthorized: false })
-//var user = process.env.ODATA_USER
-var user = "root";
-//var pswd = process.env.ODATA_PASSWORD
-var pswd = "123";
+var user = process.env.ODATA_USER
+var pswd = process.env.ODATA_PASSWD
 var auth = new Buffer.from(user + ":" + pswd).toString("base64")
 var port = "8080";
 var protocol = "http";
