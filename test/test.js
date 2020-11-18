@@ -1,4 +1,6 @@
 process.env.LOGGING_LOGTOFILE = true
+process.env.ODATA_USER = "root"
+process.env.ODATA_PASSWD = "123"
 var server = require('../mockserver')
 before(() => {
 	server.init()
