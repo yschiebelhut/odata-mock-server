@@ -1184,6 +1184,7 @@ module.exports = {
 				app.use(bodyParser.text({
 					type: '*/*'
 				}))
+
 				// handle authentication
 				if (process.env.ODATA_USER && process.env.ODATA_PASSWD) {
 					app.use(basicAuth({
