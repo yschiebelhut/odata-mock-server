@@ -5,6 +5,7 @@
 	"main": "mockserver.js",
 	"scripts": {
 		"start": "node index.js",
+		"start-raw": "node index-raw.js",
 		"test": "nyc mocha --timeout 30000",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"nyan": "mocha --reporter nyan --timeout 30000",
@@ -14,6 +15,7 @@
 		"include": "mockserver.js"
 	},
 	"dependencies": {
+		"dotenv": "^8.2.0",
 		"express": "^4.17.1",
 		"express-basic-auth": "^1.2.0",
 		"moment": "^2.29.1",
