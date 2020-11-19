@@ -1223,8 +1223,12 @@ module.exports = {
 					})
 				})
 
-				// start webservice on PORT 8080
-				appServer = app.listen(8080, () => {
+				// start webservice on process.env.ODATA_PORT (default: 8080)
+				var port = 8080
+				if (process.env.ODATA_PORT) {
+					port = process.env.ODATA_PORT
+				}
+				appServer = app.listen(port, () => {
 					logger.info("express-app running")
 				})
 			})
