@@ -5,6 +5,7 @@
 	"main": "mockserver.js",
 	"scripts": {
 		"start": "node index.js",
+		"raw": "node index-raw.js",
 		"test": "nyc mocha --timeout 30000",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"nyan": "mocha --reporter nyan --timeout 30000",
