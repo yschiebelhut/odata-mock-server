@@ -1237,11 +1237,11 @@ module.exports = {
 		})
 	},
 
-	initWithOrderRoutine() {
+	initWithOrderroutine() {
 		this.init()
 		// start orderroutine
-		var gen = require("./orderroutine")
-		gen.generate();
+		var orderroutine = require("./orderroutine")
+		orderroutine.generate();
 	},
 
 	stop() {

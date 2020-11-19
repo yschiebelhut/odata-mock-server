@@ -2,16 +2,17 @@
 	"name": "odata-mock-server",
 	"version": "1.0.0",
 	"description": "standalone odata mock server based on sapui5 MockServer",
-	"main": "mockserver.js",
+	
 	"scripts": {
 		"start": "node index.js",
-		"test": "nyc mocha --timeout 30000",
+		"test": "nyc mocha --recursive --timeout 30000",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"nyan": "mocha --reporter nyan --timeout 30000",
 		"nn": "nyc npm run nyan"
 	},
 	"nyc": {
-		"include": "mockserver.js"
+		"include": ["mockserver.js", "orderroutine.js", "tools/toolbox.js"]
+		
 	},
 	"dependencies": {
 		"express": "^4.17.1",

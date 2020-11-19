@@ -75,7 +75,7 @@ module.exports = {
             }
         ]
 
-        // mockserver.init()
+
 
         var tools = require('./tools/toolbox.js')
 
@@ -96,10 +96,7 @@ module.exports = {
             task.Tanum = "" + (20000000 + id)
 
             taskIndex += 1
-            if (taskIndex == TASKS.length) {
-                taskIndex = 0
-            }
-
+           
             await tools.createEntity("WarehouseOrderSet", order)
             await tools.createEntity("OpenWarehouseTaskSet", task)
             id += 1
@@ -123,6 +120,7 @@ module.exports = {
             await tools.createEntity("OpenWarehouseTaskSet", task)
             id += 1
         }, 25000)
+
 
     }
 }
