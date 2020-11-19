@@ -2,7 +2,6 @@
 	"name": "odata-mock-server",
 	"version": "1.0.0",
 	"description": "standalone odata mock server based on sapui5 MockServer",
-	
 	"scripts": {
 		"start": "node index.js",
 		"raw": "node index-raw.js",
@@ -12,8 +11,10 @@
 		"nn": "nyc npm run nyan"
 	},
 	"nyc": {
-		"include": ["mockserver.js", "orderroutine.js", "tools/toolbox.js"]
-		
+		"include": [
+			"mockserver.js",
+			"orderroutine.js"
+		]
 	},
 	"dependencies": {
 		"express": "^4.17.1",
