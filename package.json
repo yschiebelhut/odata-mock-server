@@ -5,7 +5,8 @@
 	
 	"scripts": {
 		"start": "node index.js",
-		"test": "nyc mocha --recursive --timeout 30000",
+		"raw": "node index-raw.js",
+		"test": "nyc mocha --timeout 30000",
 		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"nyan": "mocha --reporter nyan --timeout 30000",
 		"nn": "nyc npm run nyan"

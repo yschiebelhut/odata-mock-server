@@ -21,6 +21,9 @@ var user = process.env.ODATA_USER
 var pswd = process.env.ODATA_PASSWD
 var auth = new Buffer.from(user + ":" + pswd).toString("base64")
 var port = "8080";
+if (process.env.ODATA_PORT) {
+	port = process.env.ODATA_PORT
+}
 var protocol = "http";
 
 module.exports = {
