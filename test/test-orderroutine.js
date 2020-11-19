@@ -18,7 +18,7 @@ describe('Tests for Orderroutine', () => {
 		assert.deepStrictEqual(res.body.d.results.length === 1, true)
 	})
 
-	it('waits for intervall', function() {
+	it('waits for intervall', function(done) {
 		this.timeout(30000)
 		assert.deepStrictEqual(true === true, true)
 	})
