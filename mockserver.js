@@ -1084,7 +1084,7 @@ module.exports = {
 				// End of function imports
 
 
-				
+
 				// creation of the MockServer
 				var ms = new MockServer({
 					rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
@@ -1237,6 +1237,12 @@ module.exports = {
 		})
 	},
 
+	initWithOrderRoutine() {
+		this.init()
+		// start orderroutine
+		var gen = require("./orderroutine")
+		gen.generate();
+	},
 
 	stop() {
 		appServer.close()
