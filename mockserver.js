@@ -23,6 +23,8 @@ module.exports = {
 
 
 				// Begin of function imports
+				//#region function Imports
+
 				var SendFirstConfirmationError = function (oXhr, sUrlParams) {
 					logger.debug("invoking SendFirstConfirmationError")
 					logger.debug("sUrlParams: " + sUrlParams)
@@ -1078,12 +1080,11 @@ module.exports = {
 					})
 				}
 
-
+				//#endregion
 				// End of function imports
 
 
-
-
+				
 				// creation of the MockServer
 				var ms = new MockServer({
 					rootUri: "/odata/SAP/ZEWM_ROBCO_SRV/"
@@ -1105,6 +1106,7 @@ module.exports = {
 
 
 				// add request handlers for the function imports
+				//#region request handlers
 				var aRequests = ms.getRequests()
 				aRequests.push({
 					method: "POST",
@@ -1167,7 +1169,7 @@ module.exports = {
 					response: UnsetWarehouseOrderInProcessStatus
 				})
 				ms.setRequests(aRequests)
-
+				//#endregion
 
 				// start the MockServer
 				// (also log some debug information)
