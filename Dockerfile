@@ -18,4 +18,4 @@ COPY --from=build /usr/src/app/node_modules ./node_modules
 #RUN du -sh ./node_modules
 
 EXPOSE 8080
-CMD [ "node", "mockserver.js" ]
+CMD [ "npm", "start" ]
