@@ -1,12 +1,14 @@
 language: node_js
 node_js:
-  - 14.15.0
+- 14.15.0
 install:
-  - npm install
-
+- npm install
 after_success:
-  - npm run coverage
- 
+- npm run coverage
 notifications:
   email:
-    - y.schiebelhut@sap.com
+  - y.schiebelhut@sap.com
+env:
+  global:
+  - secure: eslojc6DH5yMcfFjUiHpDYVLqxD+aDWsdNSi3CKavoZA44E/8MUttQjQOUQoqLL8LJ7RR5kmAzp88lcmdms0pSAN/+yg5lzCFIk9W+snbfGCsZKZhTbMEdYKVLcnzHenS2c8eK0nL5RB/dO6/Vq5EC3ZVvtUJCA5bw93lajtw51G+uH5YbOwbWRzS3VxDY7Raoq16GsJDnLD+SF/GqKi0ZTMu6i+t6z2Bq8It6oHzr4JOgfyJG/JwtdC9CCYz1WoYb6O9boSrYgJL4yLCFcC3WLstsD4+yigXJ4UtTKi5Dh+s+qyqAuwlg5Hio5mYY22URzWK/Cp9mNtMwTix/FqvJXEVYFLEBrjNci5NrOp0pGJeGmDtBWaM4hDVzdIyX9DuXU/rG/mUMOO6/0OnHISma2Qh1bWs9Bzng9XiG9+aNFdF7w9BUjw+SuD9craWsq+AoX9yo4ubhnQGSzuKo/IpQB49+zVMv53UAY8rQEJEUKL7FCJKFURyUJbat82cwCPFMD9PIIVs/OeGYoYtVvnFni+q8usa0STCuyeiGwZad0O67S8V1LArdMV3avvqY5+NUvxsXeSt/RutOASp/zWsJXfmtO4v6HKOV24CxfwSQXJoyKEu5Ev/4ABo1MHpnUOAczl9PhoAs613WdOp/lLA5CaFW7tygZREiSvrIyUdds=
+  - secure: Lug1ChN2bVZVvBFPU5PvD1rb0wb/BvDTP0wbUCDL7EqI8Qvck5Dvd+eCcFkNf4fSFIrBl4SjEMemA1UG36q92iacAXqadITnmCY3Xtx/Z0MjJs9ovI8Un/A30s1NXQKVbLRsLF94xcyNaUgjURjoQvNy9PfA87ly2Ts2YzdlHWZE6ZPJKsnOgdU0Ln6O3nAG6dIWnSiKgcxxQ0hjzaP+lcXQ2fEgVibBMzoQxFs4nWMXVD5pYJ5jb5VtblaOPPFt5Yq2Eh/hS8an5hB1SCUwssWDrANQhWjr41w8BPgWtHeRvXg4GkwWu1F30VTxGbJomn27jj3128nrEcpHOJLr3GWSukD0bF7gyy7AZaGhKs4fZRWdtLM1OOvayE0vhWl9Swe9JipU/zQF3we9wtDuuCCwrnMHhZV8W/kfYiFFDmifjkJvh4Gav/pZSohpfU8HklvpxDBaJEvW/ch0u9PyrQIYFWA+JkhNA2ziQzy/7f604saRgjR8DAR95NFSsQXqHJejZJa02b6ITRWTEjPGpKO3tVl5jR7sclMhPiW6iUzYOGr1aEsItgLWjrB5fK23xm4ph6UbOxrTXFC+kGaNQt0D1VEk2yHsIefkc2qY4/HFq4TREV2QJ+6rALGSnsjFESZ9K8r+weuY2Jw5u0eYYiRJnLM39cCLIlUXBdTWKcI=
