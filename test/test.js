@@ -1,4 +1,5 @@
 process.env.LOGGING_LOGTOFILE = true
+
 var server = require('../mockserver')
 
 var assert = require('assert')
@@ -997,6 +998,7 @@ describe('Test for basic server functionality', () => {
 })
 
 
+process.env.GEN_INT = 1000
 describe('Tests for Orderroutine', () => {
 	before(() => {
 		server.initWithOrderroutine()
@@ -1010,8 +1012,8 @@ describe('Tests for Orderroutine', () => {
 	it('waits for intervall', function (done) {
 		setTimeout(() => {
 			done()
-		}, 30000)
-	}).timeout(31000)
+		}, 2000)
+	}).timeout(3000)
 
 	it('checks if intervall creates an order', async () => {
 		let res = await tools.getEntity("WarehouseOrderSet", {})

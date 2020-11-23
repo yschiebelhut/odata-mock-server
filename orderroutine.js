@@ -96,13 +96,17 @@ module.exports = {
             task.Tanum = "" + (20000000 + id)
 
             taskIndex += 1
-           
+
             await tools.createEntity("WarehouseOrderSet", order)
             await tools.createEntity("OpenWarehouseTaskSet", task)
             id += 1
         }, 100)
 
         // Create Order + Task
+        var interval = 25000
+        if (process.env.GEN_INT) {
+            interval = process.env.GEN_INT
+        }
         setInterval(async () => {
             let order = WAREHOUSEORDER_TEMPLATE
             let task = TASKS[taskIndex]
@@ -119,7 +123,7 @@ module.exports = {
             await tools.createEntity("WarehouseOrderSet", order)
             await tools.createEntity("OpenWarehouseTaskSet", task)
             id += 1
-        }, 25000)
+        }, interval)
 
 
     }
