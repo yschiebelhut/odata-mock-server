@@ -108,21 +108,25 @@ module.exports = {
             interval = process.env.GEN_INT
         }
         setInterval(async () => {
-            let order = WAREHOUSEORDER_TEMPLATE
-            let task = TASKS[taskIndex]
-
-            order.Who = "" + (10000000 + id)
-            task.Who = order.Who
-            task.Tanum = "" + (20000000 + id)
-
-            taskIndex += 1
-            if (taskIndex == TASKS.length) {
-                taskIndex = 0
+            // limit new Orders and Tasks by the total number of open WHTs
+            let openWhtCount = await tools.makeRequest("http://localhost:8080/odata/SAP/ZEWM_ROBCO_SRV/OpenWarehouseTaskSet/$count", {})
+            if (openWhtCount.body < 250) {
+                let order = WAREHOUSEORDER_TEMPLATE
+                let task = TASKS[taskIndex]
+    
+                order.Who = "" + (10000000 + id)
+                task.Who = order.Who
+                task.Tanum = "" + (20000000 + id)
+    
+                taskIndex += 1
+                if (taskIndex == TASKS.length) {
+                    taskIndex = 0
+                }
+    
+                await tools.createEntity("WarehouseOrderSet", order)
+                await tools.createEntity("OpenWarehouseTaskSet", task)
+                id += 1
             }
-
-            await tools.createEntity("WarehouseOrderSet", order)
-            await tools.createEntity("OpenWarehouseTaskSet", task)
-            id += 1
         }, interval)
 
 
